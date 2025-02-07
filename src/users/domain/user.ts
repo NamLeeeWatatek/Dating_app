@@ -4,13 +4,11 @@ import { Role } from '../../roles/domain/role';
 import { Status } from '../../statuses/domain/status';
 import { ApiProperty } from '@nestjs/swagger';
 
-const idType = Number;
-
 export class User {
   @ApiProperty({
-    type: idType,
+    type: String,
   })
-  id: number | string;
+  id: string;
 
   @ApiProperty({
     type: String,
