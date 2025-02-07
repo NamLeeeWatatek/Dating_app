@@ -16,13 +16,14 @@ import { FileEntity } from '../../../../../files/infrastructure/persistence/rela
 
 import { AuthProvidersEnum } from '../../../../../auth/auth-providers.enum';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { ProfileEntity } from '../../../../../profiles/infrastructure/persistence/relational/entities/profile.entity';
 
 @Entity({
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   // For "string | null" we need to use String type.
   // More info: https://github.com/typeorm/typeorm/issues/2567
@@ -71,4 +72,7 @@ export class UserEntity extends EntityRelationalHelper {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
+  profile?: ProfileEntity;
 }
