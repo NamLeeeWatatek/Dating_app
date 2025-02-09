@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
-import { Gender } from '../../../../../utils/enums/gender';
+import { Gender } from '../../../../../utils/enums/gender.enum';
 
 @Entity('profiles')
 export class ProfileEntity {
@@ -18,6 +18,9 @@ export class ProfileEntity {
   @OneToOne(() => UserEntity, (user) => user.profile, { eager: true })
   @JoinColumn()
   user: UserEntity;
+
+  @Column({ default: true })
+  isPublic: boolean;
 
   @Column()
   displayName: string;
@@ -31,11 +34,20 @@ export class ProfileEntity {
   @Column({ nullable: true })
   bio?: string;
 
+  @Column({ nullable: true })
+  location?: string;
+
   @Column('text', { array: true, nullable: true })
   interests?: string[];
 
   @Column({ nullable: true })
   avatarUrl?: string;
+
+  @Column({ nullable: true })
+  latitude?: number;
+
+  @Column({ nullable: true })
+  longitude?: number;
 
   @CreateDateColumn()
   createdAt: Date;

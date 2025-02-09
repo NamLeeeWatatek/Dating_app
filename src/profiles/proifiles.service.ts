@@ -11,6 +11,7 @@ import { FilterProfileDto, SortProfileDto } from './dto/query-profile.dto';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { NullableType } from '../utils/types/nullable.type';
+import { PaginationResult } from '../utils/dto/pagination-result.dto';
 
 @Injectable()
 export class ProfileService {
@@ -39,6 +40,10 @@ export class ProfileService {
       bio: createProfileDto.bio,
       interests: createProfileDto.interests,
       avatarUrl: createProfileDto.avatarUrl,
+      isPublic: createProfileDto.isPublic,
+      location: createProfileDto.location,
+      latitude: createProfileDto.latitude,
+      longitude: createProfileDto.longitude,
     });
   }
 
@@ -50,7 +55,7 @@ export class ProfileService {
     filterOptions?: FilterProfileDto | null;
     sortOptions?: SortProfileDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<Profile[]> {
+  }): Promise<PaginationResult<Profile>> {
     return this.profileRepository.findManyWithPagination({
       filterOptions,
       sortOptions,
@@ -84,6 +89,10 @@ export class ProfileService {
       bio: updateProfileDto.bio,
       interests: updateProfileDto.interests,
       avatarUrl: updateProfileDto.avatarUrl,
+      isPublic: updateProfileDto.isPublic,
+      location: updateProfileDto.location,
+      longitude: updateProfileDto.longitude,
+      latitude: updateProfileDto.latitude,
     });
   }
 

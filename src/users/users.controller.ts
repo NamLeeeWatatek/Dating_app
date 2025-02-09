@@ -37,7 +37,7 @@ import { RolesGuard } from '../roles/roles.guard';
 import { infinityPagination } from '../utils/infinity-pagination';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
+@Roles(RoleEnum.admin, RoleEnum.user)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Users')
 @Controller({
@@ -76,17 +76,18 @@ export class UsersController {
       limit = 50;
     }
 
-    return infinityPagination(
-      await this.usersService.findManyWithPagination({
+    const { data, totalItems } = await this.usersService.findManyWithPagination(
+      {
         filterOptions: query?.filters,
         sortOptions: query?.sort,
         paginationOptions: {
           page,
           limit,
         },
-      }),
-      { page, limit },
+      },
     );
+
+    return infinityPagination(data, totalItems, { page, limit });
   }
 
   @ApiOkResponse({

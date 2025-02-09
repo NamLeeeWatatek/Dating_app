@@ -9,9 +9,13 @@ import {
   IsEnum,
   IsArray,
   IsString,
+  IsBoolean,
+  IsLatitude,
+  IsLongitude,
 } from 'class-validator';
 import { StatusDto } from '../../statuses/dto/status.dto';
-import { Gender } from '../../utils/enums/gender';
+import { Gender } from '../../utils/enums/gender.enum';
+// import { FileDto } from '../../files/dto/file.dto';
 
 export class CreateProfileDto {
   @ApiProperty({
@@ -25,6 +29,11 @@ export class CreateProfileDto {
   @IsNotEmpty()
   @IsString()
   displayName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  isPublic: boolean;
 
   @ApiProperty({ example: 25, type: Number })
   @IsInt()
@@ -56,6 +65,21 @@ export class CreateProfileDto {
   @IsOptional()
   @Type(() => StatusDto)
   status?: StatusDto;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @ApiPropertyOptional({ example: 37.7749, type: Number })
+  @IsOptional()
+  @IsLatitude()
+  latitude?: number;
+
+  @ApiPropertyOptional({ example: -122.4194, type: Number })
+  @IsOptional()
+  @IsLongitude()
+  longitude?: number;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()

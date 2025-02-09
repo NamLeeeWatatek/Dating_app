@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -17,6 +18,7 @@ import { FileEntity } from '../../../../../files/infrastructure/persistence/rela
 import { AuthProvidersEnum } from '../../../../../auth/auth-providers.enum';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ProfileEntity } from '../../../../../profiles/infrastructure/persistence/relational/entities/profile.entity';
+import { InteractionEntity } from '../../../../../interactions/infrastructure/persistence/relational/entities/interaction.entity';
 
 @Entity({
   name: 'user',
@@ -48,6 +50,9 @@ export class UserEntity extends EntityRelationalHelper {
   @Column({ type: String, nullable: true })
   lastName: string | null;
 
+  @Column({ type: String, nullable: true })
+  location: string | null;
+
   @OneToOne(() => FileEntity, {
     eager: true,
   })
@@ -63,6 +68,17 @@ export class UserEntity extends EntityRelationalHelper {
     eager: true,
   })
   status?: StatusEntity;
+  @OneToMany(() => InteractionEntity, (interaction) => interaction.senderUserId)
+  sentInteractions: InteractionEntity[];
+
+  @OneToMany(
+    () => InteractionEntity,
+    (interaction) => interaction.receiverUserId,
+  )
+  receivedInteractions: InteractionEntity[];
+
+  @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
+  profile?: ProfileEntity;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -72,7 +88,4 @@ export class UserEntity extends EntityRelationalHelper {
 
   @DeleteDateColumn()
   deletedAt: Date;
-
-  @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
-  profile?: ProfileEntity;
 }

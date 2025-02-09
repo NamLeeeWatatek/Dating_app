@@ -27,6 +27,7 @@ import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ProfileModule } from './profiles/profiles.module';
+import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -80,6 +81,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       inject: [ConfigService],
     }),
     ProfileModule,
+    InteractionModule,
     UsersModule,
     FilesModule,
     AuthModule,

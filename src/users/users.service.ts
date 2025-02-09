@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
-import { UserRepository } from './infrastructure/persistence/user.repository';
+
 import { User } from './domain/user';
 import bcrypt from 'bcryptjs';
 import { AuthProvidersEnum } from '../auth/auth-providers.enum';
@@ -18,6 +18,8 @@ import { FileType } from '../files/domain/file';
 import { Role } from '../roles/domain/role';
 import { Status } from '../statuses/domain/status';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRepository } from './infrastructure/persistence/user.repository';
+import { PaginationResult } from '../utils/dto/pagination-result.dto';
 
 @Injectable()
 export class UsersService {
@@ -136,7 +138,7 @@ export class UsersService {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<PaginationResult<User>> {
     return this.usersRepository.findManyWithPagination({
       filterOptions,
       sortOptions,

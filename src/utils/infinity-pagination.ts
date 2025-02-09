@@ -3,10 +3,18 @@ import { InfinityPaginationResponseDto } from './dto/infinity-pagination-respons
 
 export const infinityPagination = <T>(
   data: T[],
+  totalItems: number,
   options: IPaginationOptions,
 ): InfinityPaginationResponseDto<T> => {
+  const totalPages = Math.ceil(totalItems / options.limit);
+
   return {
     data,
-    hasNextPage: data.length === options.limit,
+    totalItems,
+    totalPages,
+    currentPage: options.page,
+    pageSize: options.limit,
+    hasNextPage: options.page < totalPages,
+    hasPreviousPage: options.page > 1,
   };
 };

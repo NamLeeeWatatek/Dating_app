@@ -3,6 +3,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { Profile } from '../../domain/profile';
 import { FilterProfileDto, SortProfileDto } from '../../dto/query-profile.dto';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
+import { PaginationResult } from '../../../utils/dto/pagination-result.dto';
 
 export abstract class ProfileRepository {
   abstract create(
@@ -16,7 +17,8 @@ export abstract class ProfileRepository {
     filterOptions?: FilterProfileDto | null;
     sortOptions?: SortProfileDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<Profile[]>;
+  }): Promise<PaginationResult<Profile>>;
+
   abstract findById(id: Profile['id']): Promise<NullableType<Profile>>;
   abstract findByUserId(userId: string): Promise<NullableType<Profile>>;
 
