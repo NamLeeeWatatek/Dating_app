@@ -21,7 +21,6 @@ export abstract class ProfileRepository {
 
   abstract findById(id: Profile['id']): Promise<NullableType<Profile>>;
   abstract findByUserId(userId: string): Promise<NullableType<Profile>>;
-
   abstract update(
     id: Profile['id'],
     payload: DeepPartial<Profile>,

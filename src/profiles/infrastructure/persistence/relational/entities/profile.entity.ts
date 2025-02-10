@@ -40,8 +40,8 @@ export class ProfileEntity {
   @Column('text', { array: true, nullable: true })
   interests?: string[];
 
-  @Column({ nullable: true })
-  avatarUrl?: string;
+  @Column('text', { array: true, nullable: true })
+  files?: string[];
 
   @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
   latitude?: number;

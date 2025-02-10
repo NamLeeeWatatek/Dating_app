@@ -28,8 +28,8 @@ export class Profile {
   @ApiProperty({ type: [String], example: ['reading', 'music'] })
   interests?: string[];
 
-  @ApiProperty({ type: String, nullable: true })
-  avatarUrl?: string;
+  @ApiProperty()
+  files?: string[];
 
   @ApiProperty()
   createdAt: Date;

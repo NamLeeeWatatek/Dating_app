@@ -57,9 +57,11 @@ export class CreateProfileDto {
   @IsString({ each: true })
   interests?: string[];
 
-  // @ApiPropertyOptional({ type: () => FileDto })
-  // @IsOptional()
-  // photo?: FileDto | null;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  files?: string[];
 
   @ApiPropertyOptional({ type: StatusDto })
   @IsOptional()
