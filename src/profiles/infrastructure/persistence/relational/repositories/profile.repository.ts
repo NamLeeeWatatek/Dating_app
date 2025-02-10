@@ -36,14 +36,15 @@ export class ProfilesRelationalRepository implements ProfileRepository {
     filterOptions?: FilterProfileDto | null;
     sortOptions?: SortProfileDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<Profile[]> {
+  }): Promise<{ data: Profile[]; totalItems: number }> {
     const where: FindOptionsWhere<ProfileEntity> = {};
 
     if (filterOptions?.users?.length) {
       where.user = { id: In(filterOptions.users.map((id) => Number(id))) };
     }
 
-    const entities = await this.profilesRepository.find({
+    // Sử dụng findAndCount để lấy cả data và totalItems
+    const [entities, totalItems] = await this.profilesRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where,
@@ -56,7 +57,10 @@ export class ProfilesRelationalRepository implements ProfileRepository {
       ),
     });
 
-    return entities.map((profile) => ProfileMapper.toDomain(profile));
+    return {
+      data: entities.map((profile) => ProfileMapper.toDomain(profile)),
+      totalItems,
+    };
   }
 
   async findById(id: Profile['id']): Promise<NullableType<Profile>> {

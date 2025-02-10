@@ -11,10 +11,16 @@ export class ProfileMapper {
     domainEntity.age = entity.age;
     domainEntity.gender = entity.gender;
     domainEntity.bio = entity.bio;
+    domainEntity.location = entity.location;
     domainEntity.interests = entity.interests;
     domainEntity.avatarUrl = entity.avatarUrl;
     domainEntity.createdAt = entity.createdAt;
     domainEntity.updatedAt = entity.updatedAt;
+    domainEntity.isPublic = entity.isPublic;
+    domainEntity.location = entity.location;
+    domainEntity.longitude = entity.longitude;
+    domainEntity.latitude = entity.latitude;
+
     return domainEntity;
   }
 
@@ -27,9 +33,13 @@ export class ProfileMapper {
     persistenceEntity.displayName = domainEntity.displayName;
     persistenceEntity.age = domainEntity.age;
     persistenceEntity.gender = domainEntity.gender;
+    persistenceEntity.location = domainEntity.location;
+    persistenceEntity.isPublic = domainEntity.isPublic;
     persistenceEntity.bio = domainEntity.bio;
     persistenceEntity.interests = domainEntity.interests;
     persistenceEntity.avatarUrl = domainEntity.avatarUrl;
+    persistenceEntity.longitude = domainEntity.longitude;
+    persistenceEntity.latitude = domainEntity.latitude;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     return persistenceEntity;

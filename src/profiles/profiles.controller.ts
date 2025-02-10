@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -38,7 +39,7 @@ import { NullableType } from '../utils/types/nullable.type';
 import { ProfileService } from './proifiles.service';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.user)
+@Roles(RoleEnum.user, RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Profiles')
 @Controller({
@@ -77,7 +78,7 @@ export class ProfileController {
       limit = 50;
     }
 
-    return infinityPagination(
+    const { data, totalItems } =
       await this.profileService.findManyWithPagination({
         filterOptions: query?.filters,
         sortOptions: query?.sort,
@@ -85,9 +86,9 @@ export class ProfileController {
           page,
           limit,
         },
-      }),
-      { page, limit },
-    );
+      });
+
+    return infinityPagination(data, totalItems, { page, limit });
   }
 
   @ApiOkResponse({
@@ -120,6 +121,7 @@ export class ProfileController {
     type: String,
     required: true,
   })
+  @ApiBody({ type: UpdateProfileDto }) // Thêm dòng này
   update(
     @Param('id') id: Profile['id'],
     @Body() updateProfileDto: UpdateProfileDto,
