@@ -43,10 +43,10 @@ export class ProfileEntity {
   @Column({ nullable: true })
   avatarUrl?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
   latitude?: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
   longitude?: number;
 
   @CreateDateColumn()
