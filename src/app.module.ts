@@ -29,6 +29,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
+import { FirebaseModule } from './firebase/firebase.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -82,6 +83,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       inject: [ConfigService],
     }),
     UserPreferencesModule,
+    FirebaseModule,
     ProfileModule,
     InteractionModule,
     UsersModule,

@@ -37,15 +37,12 @@ async function bootstrap() {
   );
 
   const options = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('API docs')
-    .setVersion('1.0')
+    .setTitle('Dating API')
+    .setDescription('API documentation')
     .addBearerAuth()
     .build();
-
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
-
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 }
 void bootstrap();
