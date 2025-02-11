@@ -13,14 +13,14 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { PaginationResult } from '../utils/dto/pagination-result.dto';
-import { FirebaseStorageService } from '../firebase/services/firebase-storage.service';
+import { FilesFirebaseService } from '../files/infrastructure/uploader/firebase/files.service';
 
 @Injectable()
 export class ProfileService {
   constructor(
     private readonly profileRepository: ProfileRepository,
     private readonly usersService: UsersService,
-    private readonly firebaseStorageService: FirebaseStorageService,
+    private readonly firebaseStorageService: FilesFirebaseService,
   ) {}
 
   async create(createProfileDto: CreateProfileDto): Promise<Profile> {
@@ -64,14 +64,20 @@ export class ProfileService {
       });
     }
 
-    const imageUrls = await this.firebaseStorageService.uploadFiles(
+    // 1. Upload và lưu file vào database
+    const savedFiles = await this.firebaseStorageService.createMultiple(
       files,
       'uploads/profiles',
     );
-    profile.files = [...(profile.files || []), ...imageUrls];
+
+    // 2. Lấy danh sách ID của các file đã lưu
+    const fileIds = savedFiles.files.map((file) => file.id);
+
+    // 3. Cập nhật profile với danh sách ID file thay vì URL
+    profile.files = [...(profile.files || []), ...fileIds];
     await this.profileRepository.update(profile.id, { files: profile.files });
 
-    return imageUrls;
+    return fileIds;
   }
 
   async findManyWithPagination({
