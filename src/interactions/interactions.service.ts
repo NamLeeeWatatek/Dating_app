@@ -11,7 +11,7 @@ import { PaginationResult } from '../utils/dto/pagination-result.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { UpdateInteractionDto } from './dto/update-interation.dto';
 import { UsersService } from '../users/users.service';
-import { InteractionType } from '../utils/enums/interaction.enum';
+import { InteractionType } from './enums/interaction.enum';
 
 @Injectable()
 export class InteractionsService {

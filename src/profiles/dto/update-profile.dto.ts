@@ -14,9 +14,10 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { Gender } from '../../utils/enums/gender.enum';
-import { StatusDto } from '../../statuses/dto/status.dto';
-import { Type } from 'class-transformer';
+import { Gender } from '../enums/gender.enum';
+import { SexualOrientation } from '../enums/sexual-orientation.enum';
+// import { StatusDto } from '../../statuses/dto/status.dto';
+// import { Type } from 'class-transformer';
 
 export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @ApiProperty({
@@ -58,16 +59,21 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @IsString({ each: true })
   interests?: string[];
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  files?: string[];
+  @ApiProperty({ example: Gender.MALE, enum: SexualOrientation })
+  @IsNotEmpty()
+  @IsEnum(SexualOrientation)
+  sexualOrientation: SexualOrientation;
 
-  @ApiPropertyOptional({ type: StatusDto })
-  @IsOptional()
-  @Type(() => StatusDto)
-  status?: StatusDto;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsArray()
+  // @IsString({ each: true })
+  // files?: string[];
+
+  // @ApiPropertyOptional({ type: StatusDto })
+  // @IsOptional()
+  // @Type(() => StatusDto)
+  // status?: StatusDto;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
@@ -83,9 +89,4 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @IsOptional()
   @IsLongitude()
   longitude?: number;
-
-  @ApiPropertyOptional({ type: String })
-  @IsOptional()
-  @IsString()
-  avatarUrl?: string;
 }

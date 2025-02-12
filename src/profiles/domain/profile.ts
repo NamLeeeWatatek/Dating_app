@@ -1,7 +1,8 @@
 import { User } from '../../users/domain/user';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Gender } from '../../utils/enums/gender.enum';
-import { IsLatitude, IsLongitude, IsOptional } from 'class-validator';
+import { Gender } from '../enums/gender.enum';
+import { IsEnum, IsLatitude, IsLongitude, IsOptional } from 'class-validator';
+import { SexualOrientation } from '../enums/sexual-orientation.enum';
 
 export class Profile {
   @ApiProperty({ type: String })
@@ -18,9 +19,6 @@ export class Profile {
 
   @ApiProperty({ type: Number, example: 25 })
   age: number;
-
-  @ApiProperty({ type: String, example: Gender.MALE })
-  gender: Gender;
 
   @ApiProperty({ type: String, nullable: true })
   bio?: string;
@@ -46,6 +44,14 @@ export class Profile {
   @IsOptional()
   @IsLongitude()
   longitude?: number;
+
+  @ApiProperty({ type: String, example: Gender.MALE })
+  @IsOptional()
+  @IsEnum(SexualOrientation)
+  sexualOrientation?: SexualOrientation;
+
+  @ApiProperty({ type: String, example: Gender.MALE })
+  gender: Gender;
 
   @ApiProperty()
   updatedAt: Date;

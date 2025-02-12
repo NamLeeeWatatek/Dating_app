@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpStatus,
   Injectable,
   NotFoundException,
@@ -34,7 +35,17 @@ export class ProfileService {
         },
       });
     }
-
+    const existingProfile = await this.profileRepository.findByUserId(
+      createProfileDto.userId,
+    );
+    if (existingProfile) {
+      throw new ConflictException({
+        status: HttpStatus.CONFLICT,
+        errors: {
+          userId: 'profileAlreadyExists',
+        },
+      });
+    }
     return this.profileRepository.create({
       user,
       displayName: createProfileDto.displayName,
@@ -42,7 +53,8 @@ export class ProfileService {
       gender: createProfileDto.gender,
       bio: createProfileDto.bio,
       interests: createProfileDto.interests,
-      files: createProfileDto.files,
+      // files: createProfileDto.files,
+      sexualOrientation: createProfileDto.sexualOrientation,
       isPublic: createProfileDto.isPublic,
       location: createProfileDto.location,
       latitude: createProfileDto.latitude,
@@ -60,7 +72,7 @@ export class ProfileService {
     if (!profile) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
-        errors: { userId: 'userNotFound' },
+        errors: { userId: 'profileNotFound' },
       });
     }
 
@@ -121,7 +133,8 @@ export class ProfileService {
       gender: updateProfileDto.gender,
       bio: updateProfileDto.bio,
       interests: updateProfileDto.interests,
-      files: updateProfileDto.files,
+      // files: updateProfileDto.files,
+      sexualOrientation: updateProfileDto.sexualOrientation,
       isPublic: updateProfileDto.isPublic,
       location: updateProfileDto.location,
       longitude: updateProfileDto.longitude,

@@ -14,7 +14,7 @@ import {
   SortInteractionDto,
 } from '../../../../dto/query-interation.dto';
 import { InteractionMapper } from '../mappers/interaction.mapper';
-import { InteractionType } from '../../../../../utils/enums/interaction.enum';
+import { InteractionType } from '../../../../enums/interaction.enum';
 
 @Injectable()
 export class InteractionsRelationalRepository implements InteractionRepository {

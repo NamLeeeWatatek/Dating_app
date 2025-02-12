@@ -28,6 +28,7 @@ import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { User } from '../users/domain/user';
+import { SuccessResponseDto } from '../utils/dto/success-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -193,7 +194,9 @@ export class AuthService {
     };
   }
 
-  async register(dto: AuthRegisterLoginDto): Promise<void> {
+  async register(
+    dto: AuthRegisterLoginDto,
+  ): Promise<SuccessResponseDto<{ userId: string }>> {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -225,6 +228,11 @@ export class AuthService {
         hash,
       },
     });
+
+    return new SuccessResponseDto(
+      { userId: user.id },
+      'User registered successfully',
+    );
   }
 
   async confirmEmail(hash: string): Promise<void> {

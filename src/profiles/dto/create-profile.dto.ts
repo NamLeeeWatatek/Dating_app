@@ -1,4 +1,5 @@
-import { Type } from 'class-transformer';
+// import { Type } from 'class-transformer';
+// import { StatusDto } from '../../statuses/dto/status.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNotEmpty,
@@ -13,8 +14,8 @@ import {
   IsLatitude,
   IsLongitude,
 } from 'class-validator';
-import { StatusDto } from '../../statuses/dto/status.dto';
-import { Gender } from '../../utils/enums/gender.enum';
+import { Gender } from '../enums/gender.enum';
+import { SexualOrientation } from '../enums/sexual-orientation.enum';
 // import { FileDto } from '../../files/dto/file.dto';
 
 export class CreateProfileDto {
@@ -46,6 +47,11 @@ export class CreateProfileDto {
   @IsEnum(Gender)
   gender: Gender;
 
+  @ApiProperty({ example: Gender.MALE, enum: SexualOrientation })
+  @IsNotEmpty()
+  @IsEnum(SexualOrientation)
+  sexualOrientation: SexualOrientation;
+
   @ApiPropertyOptional({ example: 'Loves hiking and coffee', type: String })
   @IsOptional()
   @IsString()
@@ -57,16 +63,16 @@ export class CreateProfileDto {
   @IsString({ each: true })
   interests?: string[];
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  files?: string[];
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsArray()
+  // @IsString({ each: true })
+  // files?: string[];
 
-  @ApiPropertyOptional({ type: StatusDto })
-  @IsOptional()
-  @Type(() => StatusDto)
-  status?: StatusDto;
+  // @ApiPropertyOptional({ type: StatusDto })
+  // @IsOptional()
+  // @Type(() => StatusDto)
+  // status?: StatusDto;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
@@ -82,9 +88,4 @@ export class CreateProfileDto {
   @IsOptional()
   @IsLongitude()
   longitude?: number;
-
-  @ApiPropertyOptional({ type: String })
-  @IsOptional()
-  @IsString()
-  avatarUrl?: string;
 }
