@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { InteractionType } from '../../../../../utils/enums/interaction.enum';
+import { InteractionType } from '../../../../enums/interaction.enum';
 
 @Entity('interactions')
 export class InteractionEntity {

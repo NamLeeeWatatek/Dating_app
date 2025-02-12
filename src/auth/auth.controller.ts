@@ -24,6 +24,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
+import { SuccessResponseDto } from '../utils/dto/success-response.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -46,8 +47,10 @@ export class AuthController {
   }
 
   @Post('email/register')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
+  @HttpCode(HttpStatus.CREATED)
+  async register(
+    @Body() createUserDto: AuthRegisterLoginDto,
+  ): Promise<SuccessResponseDto<{ userId: string }>> {
     return this.service.register(createUserDto);
   }
 

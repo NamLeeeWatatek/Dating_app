@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { UserDto } from '../../users/dto/user.dto';
-import { InteractionType } from '../../utils/enums/interaction.enum';
+import { InteractionType } from '../enums/interaction.enum';
 
 export class FilterInteractionDto {
   @ApiPropertyOptional({ type: [UserDto] })

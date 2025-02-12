@@ -20,7 +20,7 @@ export class ProfileMapper {
     domainEntity.location = entity.location;
     domainEntity.longitude = entity.longitude;
     domainEntity.latitude = entity.latitude;
-
+    domainEntity.sexualOrientation = entity.sexualOrientation;
     return domainEntity;
   }
 
@@ -42,6 +42,7 @@ export class ProfileMapper {
     persistenceEntity.latitude = domainEntity.latitude;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
+    persistenceEntity.sexualOrientation = domainEntity.sexualOrientation;
     return persistenceEntity;
   }
 }
