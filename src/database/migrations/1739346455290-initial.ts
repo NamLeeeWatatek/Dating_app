@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1739186306922 implements MigrationInterface {
-  name = 'Initial1739186306922';
+export class Initial1739346455290 implements MigrationInterface {
+  name = 'Initial1739346455290';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -11,7 +11,7 @@ export class Initial1739186306922 implements MigrationInterface {
       `CREATE TABLE "role" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "profiles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "isPublic" boolean NOT NULL DEFAULT true, "displayName" character varying NOT NULL, "age" integer NOT NULL, "gender" character varying NOT NULL, "bio" character varying, "location" character varying, "interests" text array, "files" text array, "latitude" numeric(9,6), "longitude" numeric(9,6), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, CONSTRAINT "REL_315ecd98bd1a42dcf2ec4e2e98" UNIQUE ("userId"), CONSTRAINT "PK_8e520eb4da7dc01d0e190447c8e" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "profiles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "isPublic" boolean NOT NULL DEFAULT true, "displayName" character varying NOT NULL, "age" integer NOT NULL, "gender" character varying NOT NULL, "sexualOrientation" character varying NOT NULL, "bio" character varying, "location" character varying, "interests" text array, "files" text array, "latitude" numeric(9,6), "longitude" numeric(9,6), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, CONSTRAINT "REL_315ecd98bd1a42dcf2ec4e2e98" UNIQUE ("userId"), CONSTRAINT "PK_8e520eb4da7dc01d0e190447c8e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TYPE "public"."interactions_type_enum" AS ENUM('LIKE', 'DISLIKE', 'SUPERLIKE', 'REPORT', 'BLOCKED')`,

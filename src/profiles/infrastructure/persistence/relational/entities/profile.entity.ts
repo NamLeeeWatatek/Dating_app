@@ -8,7 +8,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
-import { Gender } from '../../../../../utils/enums/gender.enum';
+import { Gender } from '../../../../enums/gender.enum';
+import { SexualOrientation } from '../../../../enums/sexual-orientation.enum';
 
 @Entity('profiles')
 export class ProfileEntity {
@@ -30,6 +31,9 @@ export class ProfileEntity {
 
   @Column()
   gender: Gender;
+
+  @Column()
+  sexualOrientation?: SexualOrientation;
 
   @Column({ nullable: true })
   bio?: string;

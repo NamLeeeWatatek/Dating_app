@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { InteractionType } from '../../utils/enums/interaction.enum';
+import { InteractionType } from '../enums/interaction.enum';
 import { CreateInteractionDto } from './create-interation.dto';
 
 export class UpdateInteractionDto extends PartialType(CreateInteractionDto) {
