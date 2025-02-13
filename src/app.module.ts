@@ -29,6 +29,10 @@ import { MailerModule } from './mailer/mailer.module';
 import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { FirebaseModule } from './firebase/firebase.module';
+import { RedisModule } from './redis/redis.module';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -81,6 +85,23 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        store: await redisStore({
+          socket: {
+            host:
+              configService.get<string>('REDIS_HOST', { infer: true }) ||
+              'localhost',
+            port:
+              configService.get<number>('REDIS_PORT', { infer: true }) || 6379,
+          },
+          ttl: 30 * 1000, // 30 giây
+        }),
+      }),
+    }),
+    RedisModule,
     FirebaseModule,
     ProfileModule,
     InteractionModule,
@@ -96,5 +117,6 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     MailerModule,
     HomeModule,
   ],
+  providers: [{ provide: APP_INTERCEPTOR, useClass: CacheInterceptor }],
 })
 export class AppModule {}
