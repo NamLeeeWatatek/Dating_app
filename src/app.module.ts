@@ -30,6 +30,7 @@ import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { FirebaseModule } from './firebase/firebase.module';
+import { PotentialMatchModule } from './potential-match/potential-matches.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -84,9 +85,10 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     }),
     UserPreferencesModule,
     FirebaseModule,
+    UsersModule,
     ProfileModule,
     InteractionModule,
-    UsersModule,
+    PotentialMatchModule,
     FilesModule,
     AuthModule,
     AuthFacebookModule,
