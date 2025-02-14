@@ -21,7 +21,7 @@ import { AuthTwitterModule } from './auth-twitter/auth-twitter.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { MailModule } from './mail/mail.module';
-import { HomeModule } from './home/home.module';
+// import { HomeModule } from './home/home.module';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
@@ -30,6 +30,11 @@ import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { FirebaseModule } from './firebase/firebase.module';
+import { RedisModule } from './redis/redis.module';
+// import { redisStore } from 'cache-manager-redis-yet';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import redisConfig from './redis/config/redis.config';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -52,6 +57,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
         googleConfig,
         twitterConfig,
         appleConfig,
+        redisConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -82,6 +88,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
+    RedisModule,
     UserPreferencesModule,
     FirebaseModule,
     ProfileModule,
@@ -96,7 +103,12 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     SessionModule,
     MailModule,
     MailerModule,
-    HomeModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
 })
 export class AppModule {}

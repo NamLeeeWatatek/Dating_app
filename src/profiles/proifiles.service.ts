@@ -15,6 +15,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { PaginationResult } from '../utils/dto/pagination-result.dto';
 import { FilesFirebaseService } from '../files/infrastructure/uploader/firebase/files.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ProfileService {
@@ -22,6 +23,7 @@ export class ProfileService {
     private readonly profileRepository: ProfileRepository,
     private readonly usersService: UsersService,
     private readonly firebaseStorageService: FilesFirebaseService,
+    private readonly filesService: FilesService,
   ) {}
 
   async create(createProfileDto: CreateProfileDto): Promise<Profile> {
@@ -91,6 +93,22 @@ export class ProfileService {
 
     return fileIds;
   }
+  async getProfilePhotos(fileIds: string[]): Promise<{ images: string[] }> {
+    if (!fileIds || fileIds.length === 0) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: { fileIds: 'fileIdsRequired' },
+      });
+    }
+
+    // Lấy danh sách file từ service
+    const files = await this.filesService.findByIds(fileIds);
+
+    // Trích xuất danh sách `path` từ files
+    const imagePaths = files.map((file) => file.path);
+
+    return { images: imagePaths };
+  }
 
   async findManyWithPagination({
     filterOptions,
@@ -141,7 +159,6 @@ export class ProfileService {
       latitude: updateProfileDto.latitude,
     });
   }
-
   async remove(id: Profile['id']): Promise<void> {
     await this.profileRepository.remove(id);
   }
