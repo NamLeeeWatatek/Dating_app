@@ -28,6 +28,7 @@ import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
+import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { RedisModule } from './redis/redis.module';
 // import { redisStore } from 'cache-manager-redis-yet';
@@ -88,6 +89,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       inject: [ConfigService],
     }),
     RedisModule,
+    UserPreferencesModule,
     FirebaseModule,
     ProfileModule,
     InteractionModule,
