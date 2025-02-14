@@ -25,12 +25,16 @@ services:
       - 8080:8080
 
   redis:
-    image: redis:7-alpine
+    image: redis:latest
+    container_name: redis
     ports:
-      - 6379:6379
+      - "6379:6379"
+    restart: always
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DB=${REDIS_DB}
 
   api:
     build:
@@ -42,14 +46,14 @@ services:
       - postgres
       - redis
     environment:
-      DATABASE_HOST: postgres
+      DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_NAME: ${DATABASE_NAME}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_TTL: 3600
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_TTL: ${REDIS_TTL}
 
 volumes:
   boilerplate-db:

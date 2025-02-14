@@ -21,7 +21,7 @@ import { AuthTwitterModule } from './auth-twitter/auth-twitter.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { MailModule } from './mail/mail.module';
-import { HomeModule } from './home/home.module';
+// import { HomeModule } from './home/home.module';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
@@ -30,9 +30,10 @@ import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { RedisModule } from './redis/redis.module';
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-yet';
+// import { redisStore } from 'cache-manager-redis-yet';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import redisConfig from './redis/config/redis.config';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -55,6 +56,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
         googleConfig,
         twitterConfig,
         appleConfig,
+        redisConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -85,22 +87,6 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
-    CacheModule.registerAsync({
-      isGlobal: true,
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          socket: {
-            host:
-              configService.get<string>('REDIS_HOST', { infer: true }) ||
-              'localhost',
-            port:
-              configService.get<number>('REDIS_PORT', { infer: true }) || 6379,
-          },
-          ttl: 30 * 1000, // 30 giây
-        }),
-      }),
-    }),
     RedisModule,
     FirebaseModule,
     ProfileModule,
@@ -115,8 +101,12 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     SessionModule,
     MailModule,
     MailerModule,
-    HomeModule,
   ],
-  providers: [{ provide: APP_INTERCEPTOR, useClass: CacheInterceptor }],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule {}

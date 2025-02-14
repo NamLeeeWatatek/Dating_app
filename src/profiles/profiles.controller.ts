@@ -44,6 +44,7 @@ import { NullableType } from '../utils/types/nullable.type';
 import { ProfileService } from './proifiles.service';
 import { ErrorResponseDto } from '../utils/dto/error-response.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { GetProfilePhotosDto } from './dto/get-photos-profile.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.user, RoleEnum.admin)
@@ -72,6 +73,12 @@ export class ProfileController {
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProfileDto: CreateProfileDto): Promise<Profile> {
     return this.profileService.create(createProfileDto);
+  }
+
+  @Post('photos')
+  @ApiOperation({ summary: 'Get list image by fileIds' })
+  async getProfilePhotos(@Body() dto: GetProfilePhotosDto) {
+    return this.profileService.getProfilePhotos(dto.fileIds);
   }
 
   @ApiOkResponse({

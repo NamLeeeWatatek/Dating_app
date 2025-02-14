@@ -32,7 +32,7 @@ import { Interaction } from './domain/interaction';
 import { NullableType } from '../utils/types/nullable.type';
 import { InfinityPaginationResponse } from '../utils/dto/infinity-pagination-response.dto';
 import { infinityPagination } from '../utils/infinity-pagination';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin, RoleEnum.user)
@@ -42,9 +42,10 @@ import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
   path: 'interactions',
   version: '1',
 })
+@CacheKey('Interactions')
+@UseInterceptors(CacheInterceptor)
 export class InteractionController {
   constructor(private readonly interactionService: InteractionsService) {}
-  @UseInterceptors(CacheInterceptor)
   @ApiCreatedResponse({
     type: Interaction,
   })

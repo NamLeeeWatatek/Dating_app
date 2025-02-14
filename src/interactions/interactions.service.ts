@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   FilterInteractionDto,
   SortInteractionDto,
@@ -13,6 +13,8 @@ import { UpdateInteractionDto } from './dto/update-interation.dto';
 import { UsersService } from '../users/users.service';
 import { InteractionType } from './enums/interaction.enum';
 import { RedisService } from '../redis/redis.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class InteractionsService {
@@ -20,6 +22,7 @@ export class InteractionsService {
     private readonly interactionsRepository: InteractionRepository,
     private readonly usersService: UsersService,
     private readonly redisService: RedisService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async create(
@@ -44,9 +47,11 @@ export class InteractionsService {
       receiverUserId: receiverId,
       type,
     });
-
+    await this.redisService.testRedis();
     // 2️⃣ **Lưu vào Redis để truy vấn nhanh**
     const redisKey = `interaction:${senderId}:${receiverId}`;
+    await this.cacheManager.set('test_key_123', 'Hello Redis hehe!', 10000);
+
     await this.redisService.setValue(redisKey, type, 24 * 60 * 60); // TTL = 1 ngày
 
     return interaction;
