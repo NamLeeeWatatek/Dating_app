@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Init1739791520957 implements MigrationInterface {
-  name = 'Init1739791520957';
+export class Init1739807589240 implements MigrationInterface {
+  name = 'Init1739807589240';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -18,6 +18,9 @@ export class Init1739791520957 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE TABLE "interactions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "sender_id" uuid NOT NULL, "receiver_id" uuid NOT NULL, "type" "public"."interactions_type_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_911b7416a6671b4148b18c18ecb" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "potential_matches" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "matchScore" double precision NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, "potentialMatchId" uuid, CONSTRAINT "PK_44c1f0a1b31c9932e7de8a3cca7" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying, "password" character varying, "provider" character varying NOT NULL DEFAULT 'email', "socialId" character varying, "firstName" character varying, "lastName" character varying, "location" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "roleId" integer, "statusId" integer, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
@@ -47,6 +50,12 @@ export class Init1739791520957 implements MigrationInterface {
       `ALTER TABLE "profiles" ADD CONSTRAINT "FK_315ecd98bd1a42dcf2ec4e2e985" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
+      `ALTER TABLE "potential_matches" ADD CONSTRAINT "FK_05053a8f8eaa1012956c2a896a2" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "potential_matches" ADD CONSTRAINT "FK_ed54ead93850505867426f5e132" FOREIGN KEY ("potentialMatchId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "user" ADD CONSTRAINT "FK_c28e52f758e7bbc53828db92194" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -74,6 +83,12 @@ export class Init1739791520957 implements MigrationInterface {
       `ALTER TABLE "user" DROP CONSTRAINT "FK_c28e52f758e7bbc53828db92194"`,
     );
     await queryRunner.query(
+      `ALTER TABLE "potential_matches" DROP CONSTRAINT "FK_ed54ead93850505867426f5e132"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "potential_matches" DROP CONSTRAINT "FK_05053a8f8eaa1012956c2a896a2"`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "profiles" DROP CONSTRAINT "FK_315ecd98bd1a42dcf2ec4e2e985"`,
     );
     await queryRunner.query(`DROP TABLE "file"`);
@@ -92,6 +107,7 @@ export class Init1739791520957 implements MigrationInterface {
       `DROP INDEX "public"."IDX_9bd2fe7a8e694dedc4ec2f666f"`,
     );
     await queryRunner.query(`DROP TABLE "user"`);
+    await queryRunner.query(`DROP TABLE "potential_matches"`);
     await queryRunner.query(`DROP TABLE "interactions"`);
     await queryRunner.query(`DROP TYPE "public"."interactions_type_enum"`);
     await queryRunner.query(`DROP TABLE "profiles"`);

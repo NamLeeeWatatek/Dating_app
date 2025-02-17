@@ -9,12 +9,18 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Gender } from '../../../../enums/gender.enum';
+import { UserPreferenceEntity } from '../../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
 
 @Entity('profiles')
 export class ProfileEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
+  @OneToOne(
+    () => UserPreferenceEntity,
+    (userPreference) => userPreference.profile,
+  )
+  @JoinColumn() // Thêm JoinColumn nếu là quan hệ one-to-one
+  userPreferences: UserPreferenceEntity;
   @OneToOne(() => UserEntity, (user) => user.profile, { eager: true })
   @JoinColumn()
   user: UserEntity;

@@ -53,26 +53,26 @@ export class QueryDiscoveryDto {
   @IsOptional()
   limit?: number;
 
-  // @ApiPropertyOptional({ type: String })
-  // @IsOptional()
-  // @IsString()
-  // location?: string;
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsString()
+  location?: string;
 
-  // @ApiPropertyOptional({ type: String })
-  // @IsOptional()
-  // @IsString()
-  // gender?: Gender;
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsString()
+  gender?: Gender;
 
-  // @ApiPropertyOptional({ type: [Number] })
-  // @IsOptional()
-  // @IsArray()
-  // ageRange?: [number, number];
+  @ApiPropertyOptional({ type: [Number] })
+  @IsOptional()
+  @IsArray()
+  ageRange?: [number, number];
 
-  // @ApiPropertyOptional({ type: Number })
-  // @IsOptional()
-  // @IsNumber()
-  // @Transform(({ value }) => (value ? parseFloat(value) : undefined)) // Chuyển giá trị thành số thực
-  // distanceRange?: number;
+  @ApiPropertyOptional({ type: Number })
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => (value ? parseFloat(value) : undefined)) // Chuyển giá trị thành số thực
+  distanceRange?: number;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
@@ -81,17 +81,11 @@ export class QueryDiscoveryDto {
       ? plainToInstance(SortDiscoveryDto, JSON.parse(value))
       : undefined;
   })
-  @ApiPropertyOptional({ type: FilterDiscoveryDto })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => FilterDiscoveryDto)
-  @Transform(({ value }) => {
-    return value
-      ? plainToInstance(FilterDiscoveryDto, JSON.parse(value))
-      : undefined;
-  })
-  filter?: FilterDiscoveryDto;
-
+  // @ApiPropertyOptional({ type: () => FilterDiscoveryDto }) // Đảm bảo Swagger hiểu kiểu dữ liệu
+  // @IsOptional()
+  // @ValidateNested()
+  // @Type(() => FilterDiscoveryDto)
+  // filter?: FilterDiscoveryDto;
   @ValidateNested({ each: true })
   @Type(() => SortDiscoveryDto)
   sort?: SortDiscoveryDto[];

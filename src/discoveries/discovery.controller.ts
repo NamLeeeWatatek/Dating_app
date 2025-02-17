@@ -1,10 +1,7 @@
 import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { DiscoveryService } from './discovery.service';
-import {
-  FilterDiscoveryDto,
-  QueryDiscoveryDto,
-} from './dto/query-discovery.dto';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { QueryDiscoveryDto } from './dto/query-discovery.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../roles/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../roles/roles.guard';
@@ -20,19 +17,27 @@ import { RoleEnum } from '../roles/roles.enum';
 })
 export class DiscoveryController {
   constructor(private readonly discoveryService: DiscoveryService) {}
-  @ApiQuery({
-    name: 'filter',
-    type: FilterDiscoveryDto,
-  })
+
   @Get('search')
   async findMatchingUsers(@Query() query: QueryDiscoveryDto, @Request() req) {
-    const { page = 1, limit = 10, sort, filter } = query;
+    const {
+      page = 1,
+      limit = 10,
+      sort,
+      ageRange,
+      distanceRange,
+      gender,
+      location,
+    } = query;
     const paginationOptions = { page, limit };
     const userId = req.user.id;
+    if (!userId || !userId) {
+      throw new Error('User or user id is undefined');
+    }
     console.log(query);
     const result = await this.discoveryService.findMatchingUsers({
       userId,
-      filterOptions: filter,
+      filterOptions: { ageRange, distanceRange, gender, location },
       sortOptions: sort,
       paginationOptions,
     });
