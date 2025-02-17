@@ -52,9 +52,14 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @IsString()
   bio?: string;
 
-  @ApiProperty({ example: Gender.MALE, enum: SexualOrientation })
+  @ApiProperty({
+    example: [SexualOrientation.MALE],
+    enum: SexualOrientation,
+    isArray: true,
+  })
   @IsNotEmpty()
-  sexualOrientation: string[];
+  @IsEnum(SexualOrientation, { each: true }) // Kiểm tra từng phần tử trong mảng
+  sexualOrientation: SexualOrientation[];
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()

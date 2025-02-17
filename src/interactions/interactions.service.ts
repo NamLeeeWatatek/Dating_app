@@ -25,7 +25,7 @@ export class InteractionsService {
     private readonly usersService: UsersService,
     private readonly redisService: RedisService,
   ) {}
-  // private readonly redisFolder = 'interactions';
+  private readonly interactionFolder = 'interactions';
 
   async create(
     createInteractionDto: CreateInteractionDto,
@@ -48,15 +48,21 @@ export class InteractionsService {
     if (existingInteraction) {
       throw new ConflictException('Interaction already exists');
     }
-    if (existingInteraction) {
-      throw new ConflictException('Interaction already exists');
-    }
 
     const interaction = await this.interactionsRepository.create({
       senderUserId: senderId,
       receiverUserId: receiverId,
       type,
     });
+
+    // Bước 4: Cập nhật Redis với tương tác mới
+    const redisKey = `${senderId}:${receiverId}`;
+    await this.redisService.set(
+      this.interactionFolder,
+      redisKey,
+      interaction.type,
+      3600,
+    ); // Cập nhật Redis
 
     return interaction;
   }
@@ -65,7 +71,37 @@ export class InteractionsService {
     userId1: string,
     userId2: string,
   ): Promise<NullableType<Interaction>> {
-    return this.interactionsRepository.checkInteractionStatus(userId1, userId2);
+    // Bước 1: Kiểm tra trong Redis trước
+    const redisKey = `${userId1}:${userId2}`;
+    const cachedInteraction = await this.redisService.get(
+      this.interactionFolder,
+      redisKey,
+    );
+
+    if (cachedInteraction && typeof cachedInteraction === 'string') {
+      return JSON.parse(cachedInteraction);
+    }
+
+    // Bước 2: Nếu không có trong Redis, lấy từ Database
+    const interaction =
+      await this.interactionsRepository.checkInteractionStatus(
+        userId1,
+        userId2,
+      );
+
+    if (!interaction) {
+      return null; // Nếu không có trong DB, trả về null
+    }
+
+    // Bước 3: Lưu kết quả vào Redis
+    await this.redisService.set(
+      this.interactionFolder,
+      redisKey,
+      JSON.stringify(interaction),
+      3600,
+    ); // Lưu vào Redis trong 1 giờ
+
+    return interaction; // Trả về từ DB
   }
 
   async getSentLikes(
