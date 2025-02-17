@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
+    networks:
+      - app_network
 
   maildev:
     build:
@@ -17,25 +19,34 @@ services:
     ports:
       - ${MAIL_CLIENT_PORT}:1080
       - ${MAIL_PORT}:1025
+    networks:
+      - app_network
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+    networks:
+      - app_network
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - "6379:6379"
+      - ${REDIS_PORT}:6379
     restart: always
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf  # Mount file config vào container
+      - redis_data:/data
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]  # Chạy Redis với file cấu hình
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_DB=${REDIS_DB}
-
+    networks:
+      - app_network
   api:
     build:
       context: .
@@ -54,6 +65,12 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       REDIS_TTL: ${REDIS_TTL}
-
+    networks:
+      - app_network
+networks:
+  app_network:
 volumes:
   boilerplate-db:
+  redis_data:
+  redis:
+    driver: local

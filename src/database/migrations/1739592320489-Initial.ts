@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1739346455290 implements MigrationInterface {
-  name = 'Initial1739346455290';
+export class Initial1739592320489 implements MigrationInterface {
+  name = 'Initial1739592320489';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "status" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_e12743a7086ec826733f54e1d95" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "role" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "role" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "status" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_e12743a7086ec826733f54e1d95" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "profiles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "isPublic" boolean NOT NULL DEFAULT true, "displayName" character varying NOT NULL, "age" integer NOT NULL, "gender" character varying NOT NULL, "sexualOrientation" character varying NOT NULL, "bio" character varying, "location" character varying, "interests" text array, "files" text array, "latitude" numeric(9,6), "longitude" numeric(9,6), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, CONSTRAINT "REL_315ecd98bd1a42dcf2ec4e2e98" UNIQUE ("userId"), CONSTRAINT "PK_8e520eb4da7dc01d0e190447c8e" PRIMARY KEY ("id"))`,
@@ -32,6 +32,9 @@ export class Initial1739346455290 implements MigrationInterface {
       `CREATE INDEX "IDX_f0e1b4ecdca13b177e2e3a0613" ON "user" ("lastName") `,
     );
     await queryRunner.query(
+      `CREATE TABLE "user-preference" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "userId" uuid NOT NULL, "hobbies" text, "lookingFor" text, "languages" text, "zodiacSigns" text, "education" text, "futureFamily" text, "personalityTypes" text, "communicationStyles" text, "petPreferences" text, "drinking" text, "smoking" text, "exercise" text, "diet" text, "socialMedia" text, "sleepHabits" text, CONSTRAINT "REL_9bb77797d2f34f489301fc6989" UNIQUE ("userId"), CONSTRAINT "PK_2a44796cd34b7759c34fb3f711e" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
       `CREATE TABLE "session" ("id" SERIAL NOT NULL, "hash" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "userId" uuid, CONSTRAINT "PK_f55da76ac1c3ac420f444d2ff11" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
@@ -50,6 +53,9 @@ export class Initial1739346455290 implements MigrationInterface {
       `ALTER TABLE "user" ADD CONSTRAINT "FK_dc18daa696860586ba4667a9d31" FOREIGN KEY ("statusId") REFERENCES "status"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
+      `ALTER TABLE "user-preference" ADD CONSTRAINT "FK_9bb77797d2f34f489301fc69898" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "session" ADD CONSTRAINT "FK_3d2f174ef04fb312fdebd0ddc53" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
   }
@@ -57,6 +63,9 @@ export class Initial1739346455290 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `ALTER TABLE "session" DROP CONSTRAINT "FK_3d2f174ef04fb312fdebd0ddc53"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user-preference" DROP CONSTRAINT "FK_9bb77797d2f34f489301fc69898"`,
     );
     await queryRunner.query(
       `ALTER TABLE "user" DROP CONSTRAINT "FK_dc18daa696860586ba4667a9d31"`,
@@ -72,6 +81,7 @@ export class Initial1739346455290 implements MigrationInterface {
       `DROP INDEX "public"."IDX_3d2f174ef04fb312fdebd0ddc5"`,
     );
     await queryRunner.query(`DROP TABLE "session"`);
+    await queryRunner.query(`DROP TABLE "user-preference"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_f0e1b4ecdca13b177e2e3a0613"`,
     );
@@ -85,7 +95,7 @@ export class Initial1739346455290 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "interactions"`);
     await queryRunner.query(`DROP TYPE "public"."interactions_type_enum"`);
     await queryRunner.query(`DROP TABLE "profiles"`);
-    await queryRunner.query(`DROP TABLE "role"`);
     await queryRunner.query(`DROP TABLE "status"`);
+    await queryRunner.query(`DROP TABLE "role"`);
   }
 }

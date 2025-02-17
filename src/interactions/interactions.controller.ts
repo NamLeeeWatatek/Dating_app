@@ -10,7 +10,6 @@ import {
   Query,
   HttpStatus,
   HttpCode,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -32,7 +31,6 @@ import { Interaction } from './domain/interaction';
 import { NullableType } from '../utils/types/nullable.type';
 import { InfinityPaginationResponse } from '../utils/dto/infinity-pagination-response.dto';
 import { infinityPagination } from '../utils/infinity-pagination';
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin, RoleEnum.user)
@@ -42,14 +40,11 @@ import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
   path: 'interactions',
   version: '1',
 })
-@CacheKey('Interactions')
-@UseInterceptors(CacheInterceptor)
 export class InteractionController {
   constructor(private readonly interactionService: InteractionsService) {}
   @ApiCreatedResponse({
     type: Interaction,
   })
-  @CacheTTL(60 * 1000)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(

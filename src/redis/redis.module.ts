@@ -1,31 +1,28 @@
-import { CacheModule } from '@nestjs/cache-manager';
-import { Global, Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
+import Redis from 'ioredis';
 import { RedisService } from './redis.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { redisStore } from 'cache-manager-redis-yet';
-import { AllConfigType } from '../config/config.type';
 
 @Global()
 @Module({
-  imports: [
-    CacheModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<AllConfigType>) => ({
-        store: redisStore({
-          socket: {
-            host: configService.get('redis.host', { infer: true }),
-            port: configService.get('redis.port', { infer: true }),
-          },
-        }),
-        host: configService.get('redis.host', { infer: true }),
-        port: configService.get('redis.port', { infer: true }),
-        ttl: configService.get('redis.ttl', { infer: true }),
-        db_index: configService.get('redis.db_index', { infer: true }),
-      }),
-    }),
+  providers: [
+    {
+      provide: 'REDIS_CLIENT',
+      useFactory: () => {
+        const redis = new Redis({
+          host: process.env.REDIS_HOST || 'localhost',
+          port: Number(process.env.REDIS_PORT) || 6379,
+          password: process.env.REDIS_PASSWORD || undefined,
+          db: Number(process.env.REDIS_DB) || 0,
+        });
+
+        redis.on('connect', () => console.log('Connected to Redis'));
+        redis.on('error', (err) => console.error('Redis error:', err));
+
+        return redis;
+      },
+    },
+    RedisService,
   ],
-  providers: [RedisService],
-  exports: [RedisService, CacheModule],
+  exports: ['REDIS_CLIENT', RedisService],
 })
 export class RedisModule {}
