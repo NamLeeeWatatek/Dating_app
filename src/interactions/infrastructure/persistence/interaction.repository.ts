@@ -90,4 +90,9 @@ export abstract class InteractionRepository {
     receiverId: string,
     type: string,
   ): Promise<void>;
+
+  abstract findOneByUserIds(
+    senderId: string,
+    receiverId: string,
+  ): Promise<NullableType<Interaction>>;
 }

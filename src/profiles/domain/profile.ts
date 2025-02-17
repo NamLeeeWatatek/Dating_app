@@ -1,8 +1,7 @@
 import { User } from '../../users/domain/user';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Gender } from '../enums/gender.enum';
-import { IsEnum, IsLatitude, IsLongitude, IsOptional } from 'class-validator';
-import { SexualOrientation } from '../enums/sexual-orientation.enum';
+import { IsLatitude, IsLongitude, IsOptional } from 'class-validator';
 
 export class Profile {
   @ApiProperty({ type: String })
@@ -23,9 +22,6 @@ export class Profile {
   @ApiProperty({ type: String, nullable: true })
   bio?: string;
 
-  @ApiProperty({ type: [String], example: ['reading', 'music'] })
-  interests?: string[];
-
   @ApiProperty()
   files?: string[];
 
@@ -45,10 +41,9 @@ export class Profile {
   @IsLongitude()
   longitude?: number;
 
-  @ApiProperty({ type: String, example: Gender.MALE })
+  @ApiProperty({ type: Array, example: Gender.MALE })
   @IsOptional()
-  @IsEnum(SexualOrientation)
-  sexualOrientation?: SexualOrientation;
+  sexualOrientation: string[];
 
   @ApiProperty({ type: String, example: Gender.MALE })
   gender: Gender;

@@ -32,6 +32,7 @@ import { UserPreferencesModule } from './user-preferences/user-preferences.modul
 import { FirebaseModule } from './firebase/firebase.module';
 // import { redisStore } from 'cache-manager-redis-yet';
 import { RedisModule } from './redis/redis.module';
+import { DiscoveryModule } from './discoveries/discovery.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -99,6 +100,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     SessionModule,
     MailModule,
     MailerModule,
+    DiscoveryModule,
   ],
 })
 export class AppModule {}
