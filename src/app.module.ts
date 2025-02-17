@@ -30,10 +30,10 @@ import { ProfileModule } from './profiles/profiles.module';
 import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { FirebaseModule } from './firebase/firebase.module';
+import { PotentialMatchModule } from './potential-match/potential-matches.module';
 // import { redisStore } from 'cache-manager-redis-yet';
 import { RedisModule } from './redis/redis.module';
 import { DiscoveryModule } from './discoveries/discovery.module';
-
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
   dataSourceFactory: async (options: DataSourceOptions) => {
@@ -88,9 +88,10 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     RedisModule,
     UserPreferencesModule,
     FirebaseModule,
+    UsersModule,
     ProfileModule,
     InteractionModule,
-    UsersModule,
+    PotentialMatchModule,
     FilesModule,
     AuthModule,
     AuthFacebookModule,
