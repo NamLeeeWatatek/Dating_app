@@ -2,7 +2,6 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateProfileDto } from './create-profile.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsArray,
   IsBoolean,
   IsEnum,
   IsInt,
@@ -53,27 +52,9 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @IsString()
   bio?: string;
 
-  @ApiPropertyOptional({ example: ['Sports', 'Music'], type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  interests?: string[];
-
   @ApiProperty({ example: Gender.MALE, enum: SexualOrientation })
   @IsNotEmpty()
-  @IsEnum(SexualOrientation)
-  sexualOrientation: SexualOrientation;
-
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsArray()
-  // @IsString({ each: true })
-  // files?: string[];
-
-  // @ApiPropertyOptional({ type: StatusDto })
-  // @IsOptional()
-  // @Type(() => StatusDto)
-  // status?: StatusDto;
+  sexualOrientation: string[];
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()

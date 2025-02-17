@@ -15,6 +15,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { PaginationResult } from '../utils/dto/pagination-result.dto';
 import { FilesFirebaseService } from '../files/infrastructure/uploader/firebase/files.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ProfileService {
@@ -22,6 +23,7 @@ export class ProfileService {
     private readonly profileRepository: ProfileRepository,
     private readonly usersService: UsersService,
     private readonly firebaseStorageService: FilesFirebaseService,
+    private readonly filesService: FilesService,
   ) {}
 
   async create(createProfileDto: CreateProfileDto): Promise<Profile> {
@@ -52,8 +54,6 @@ export class ProfileService {
       age: createProfileDto.age,
       gender: createProfileDto.gender,
       bio: createProfileDto.bio,
-      interests: createProfileDto.interests,
-      // files: createProfileDto.files,
       sexualOrientation: createProfileDto.sexualOrientation,
       isPublic: createProfileDto.isPublic,
       location: createProfileDto.location,
@@ -90,6 +90,22 @@ export class ProfileService {
     await this.profileRepository.update(profile.id, { files: profile.files });
 
     return fileIds;
+  }
+  async getProfilePhotos(fileIds: string[]): Promise<{ images: string[] }> {
+    if (!fileIds || fileIds.length === 0) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: { fileIds: 'fileIdsRequired' },
+      });
+    }
+
+    // Lấy danh sách file từ service
+    const files = await this.filesService.findByIds(fileIds);
+
+    // Trích xuất danh sách `path` từ files
+    const imagePaths = files.map((file) => file.path);
+
+    return { images: imagePaths };
   }
 
   async findManyWithPagination({
@@ -132,8 +148,6 @@ export class ProfileService {
       age: updateProfileDto.age,
       gender: updateProfileDto.gender,
       bio: updateProfileDto.bio,
-      interests: updateProfileDto.interests,
-      // files: updateProfileDto.files,
       sexualOrientation: updateProfileDto.sexualOrientation,
       isPublic: updateProfileDto.isPublic,
       location: updateProfileDto.location,
@@ -141,7 +155,6 @@ export class ProfileService {
       latitude: updateProfileDto.latitude,
     });
   }
-
   async remove(id: Profile['id']): Promise<void> {
     await this.profileRepository.remove(id);
   }

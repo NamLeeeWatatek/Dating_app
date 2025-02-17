@@ -21,7 +21,7 @@ import { AuthTwitterModule } from './auth-twitter/auth-twitter.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { MailModule } from './mail/mail.module';
-import { HomeModule } from './home/home.module';
+// import { HomeModule } from './home/home.module';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
@@ -31,7 +31,9 @@ import { InteractionModule } from './interactions/infrastructure/persistence/rel
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { PotentialMatchModule } from './potential-match/potential-matches.module';
-
+// import { redisStore } from 'cache-manager-redis-yet';
+import { RedisModule } from './redis/redis.module';
+import { DiscoveryModule } from './discoveries/discovery.module';
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
   dataSourceFactory: async (options: DataSourceOptions) => {
@@ -83,6 +85,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
+    RedisModule,
     UserPreferencesModule,
     FirebaseModule,
     UsersModule,
@@ -98,7 +101,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     SessionModule,
     MailModule,
     MailerModule,
-    HomeModule,
+    DiscoveryModule,
   ],
 })
 export class AppModule {}

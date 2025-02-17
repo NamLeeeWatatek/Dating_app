@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { Gender } from '../../../../enums/gender.enum';
-import { SexualOrientation } from '../../../../enums/sexual-orientation.enum';
 
 @Entity('profiles')
 export class ProfileEntity {
@@ -32,17 +31,14 @@ export class ProfileEntity {
   @Column()
   gender: Gender;
 
-  @Column()
-  sexualOrientation?: SexualOrientation;
+  @Column('text', { array: true, nullable: false })
+  sexualOrientation: string[];
 
   @Column({ nullable: true })
   bio?: string;
 
   @Column({ nullable: true })
   location?: string;
-
-  @Column('text', { array: true, nullable: true })
-  interests?: string[];
 
   @Column('text', { array: true, nullable: true })
   files?: string[];

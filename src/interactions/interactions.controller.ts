@@ -42,7 +42,6 @@ import { infinityPagination } from '../utils/infinity-pagination';
 })
 export class InteractionController {
   constructor(private readonly interactionService: InteractionsService) {}
-
   @ApiCreatedResponse({
     type: Interaction,
   })

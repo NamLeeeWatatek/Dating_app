@@ -5,16 +5,12 @@ import {
 } from '@nestjs/common';
 import { FileRepository } from '../../persistence/file.repository';
 import { FileType } from '../../../domain/file';
-import { FirebaseStorageService } from '../../../../firebase/services/firebase-storage.service';
 import * as admin from 'firebase-admin';
 import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
 export class FilesFirebaseService {
-  constructor(
-    private readonly fileRepository: FileRepository,
-    private readonly firebaseStorageService: FirebaseStorageService,
-  ) {}
+  constructor(private readonly fileRepository: FileRepository) {}
   async uploadFile(
     file: Express.Multer.File,
     folder: string,

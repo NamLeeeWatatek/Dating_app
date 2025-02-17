@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   FilterInteractionDto,
   SortInteractionDto,
@@ -12,44 +16,51 @@ import { NullableType } from '../utils/types/nullable.type';
 import { UpdateInteractionDto } from './dto/update-interation.dto';
 import { UsersService } from '../users/users.service';
 import { InteractionType } from './enums/interaction.enum';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class InteractionsService {
   constructor(
     private readonly interactionsRepository: InteractionRepository,
     private readonly usersService: UsersService,
+    private readonly redisService: RedisService,
   ) {}
+  // private readonly redisFolder = 'interactions';
 
-  // 🟢 Tạo một tương tác mới (like, block,...)
   async create(
     createInteractionDto: CreateInteractionDto,
   ): Promise<Interaction> {
-    const senderExists = await this.usersService.findById(
-      createInteractionDto.senderId,
-    );
+    const { senderId, receiverId, type } = createInteractionDto;
+
+    const senderExists = await this.usersService.findById(senderId);
     if (!senderExists) {
-      throw new NotFoundException(
-        `Sender with ID ${createInteractionDto.senderId} not found`,
-      );
+      throw new NotFoundException(`Sender with ID ${senderId} not found`);
     }
 
-    const receiverExists = await this.usersService.findById(
-      createInteractionDto.receiverId,
-    );
+    const receiverExists = await this.usersService.findById(receiverId);
     if (!receiverExists) {
-      throw new NotFoundException(
-        `Receiver with ID ${createInteractionDto.receiverId} not found`,
-      );
+      throw new NotFoundException(`Receiver with ID ${receiverId} not found`);
     }
 
-    return await this.interactionsRepository.create({
-      senderUserId: createInteractionDto.senderId,
-      receiverUserId: createInteractionDto.receiverId,
-      type: createInteractionDto.type,
+    const existingInteraction =
+      await this.interactionsRepository.findOneByUserIds(senderId, receiverId);
+
+    if (existingInteraction) {
+      throw new ConflictException('Interaction already exists');
+    }
+    if (existingInteraction) {
+      throw new ConflictException('Interaction already exists');
+    }
+
+    const interaction = await this.interactionsRepository.create({
+      senderUserId: senderId,
+      receiverUserId: receiverId,
+      type,
     });
+
+    return interaction;
   }
 
-  // 🔍 Kiểm tra trạng thái tương tác giữa hai người dùng
   async checkInteractionStatus(
     userId1: string,
     userId2: string,
@@ -57,7 +68,6 @@ export class InteractionsService {
     return this.interactionsRepository.checkInteractionStatus(userId1, userId2);
   }
 
-  // 📜 Lấy danh sách lượt thích đã gửi
   async getSentLikes(
     userId: string,
     paginationOptions: IPaginationOptions,

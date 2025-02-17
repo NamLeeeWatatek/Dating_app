@@ -12,7 +12,6 @@ export class ProfileMapper {
     domainEntity.gender = entity.gender;
     domainEntity.bio = entity.bio;
     domainEntity.location = entity.location;
-    domainEntity.interests = entity.interests;
     domainEntity.files = entity.files;
     domainEntity.createdAt = entity.createdAt;
     domainEntity.updatedAt = entity.updatedAt;
@@ -36,7 +35,6 @@ export class ProfileMapper {
     persistenceEntity.location = domainEntity.location;
     persistenceEntity.isPublic = domainEntity.isPublic;
     persistenceEntity.bio = domainEntity.bio;
-    persistenceEntity.interests = domainEntity.interests;
     persistenceEntity.files = domainEntity.files;
     persistenceEntity.longitude = domainEntity.longitude;
     persistenceEntity.latitude = domainEntity.latitude;
