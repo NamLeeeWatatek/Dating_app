@@ -43,7 +43,6 @@ export class ProfilesRelationalRepository implements ProfileRepository {
       where.user = { id: In(filterOptions.users.map((id) => Number(id))) };
     }
 
-    // Sử dụng findAndCount để lấy cả data và totalItems
     const [entities, totalItems] = await this.profilesRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,

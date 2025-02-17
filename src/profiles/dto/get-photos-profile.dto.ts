@@ -4,11 +4,11 @@ import { ApiProperty } from '@nestjs/swagger';
 export class GetProfilePhotosDto {
   @ApiProperty({
     description: 'Danh sách các file ID',
-    type: [String], // Xác định kiểu dữ liệu trong Swagger
+    type: [String],
     example: ['123', '456', '789'],
   })
   @IsArray()
   @ArrayNotEmpty()
-  @IsString({ each: true }) // Đảm bảo mỗi phần tử là string
+  @IsString({ each: true })
   fileIds: string[];
 }

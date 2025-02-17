@@ -8,7 +8,6 @@ import {
   Min,
   Max,
   IsEnum,
-  IsArray,
   IsString,
   IsBoolean,
   IsLatitude,
@@ -16,7 +15,6 @@ import {
 } from 'class-validator';
 import { Gender } from '../enums/gender.enum';
 import { SexualOrientation } from '../enums/sexual-orientation.enum';
-// import { FileDto } from '../../files/dto/file.dto';
 
 export class CreateProfileDto {
   @ApiProperty({
@@ -49,30 +47,12 @@ export class CreateProfileDto {
 
   @ApiProperty({ example: Gender.MALE, enum: SexualOrientation })
   @IsNotEmpty()
-  @IsEnum(SexualOrientation)
-  sexualOrientation: SexualOrientation;
+  sexualOrientation: string[];
 
   @ApiPropertyOptional({ example: 'Loves hiking and coffee', type: String })
   @IsOptional()
   @IsString()
   bio?: string;
-
-  @ApiPropertyOptional({ example: ['Sports', 'Music'], type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  interests?: string[];
-
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsArray()
-  // @IsString({ each: true })
-  // files?: string[];
-
-  // @ApiPropertyOptional({ type: StatusDto })
-  // @IsOptional()
-  // @Type(() => StatusDto)
-  // status?: StatusDto;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
