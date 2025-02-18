@@ -50,7 +50,7 @@ export class UserPreferenceRelationalRepository
   }
 
   async remove(id: UserPreference['id']): Promise<void> {
-    await this.userPreferenceRepository.softDelete(id);
+    await this.userPreferenceRepository.delete(id);
   }
   async findById(
     id: UserPreference['id'],
