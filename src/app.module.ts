@@ -33,6 +33,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { PotentialMatchModule } from './potential-match/potential-matches.module';
 // import { redisStore } from 'cache-manager-redis-yet';
 import { RedisModule } from './redis/redis.module';
+import { MessageModule } from './messages/message.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -85,15 +86,16 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
+    AuthModule,
     RedisModule,
     UserPreferencesModule,
     FirebaseModule,
     UsersModule,
     ProfileModule,
     InteractionModule,
+    MessageModule,
     PotentialMatchModule,
     FilesModule,
-    AuthModule,
     AuthFacebookModule,
     AuthGoogleModule,
     AuthTwitterModule,
