@@ -35,6 +35,7 @@ import { PotentialMatchModule } from './potential-match/potential-matches.module
 import { RedisModule } from './redis/redis.module';
 import { MessageModule } from './messages/message.module';
 
+import { DiscoveryModule } from './discoveries/discovery.module';
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
   dataSourceFactory: async (options: DataSourceOptions) => {
@@ -103,6 +104,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     SessionModule,
     MailModule,
     MailerModule,
+    DiscoveryModule,
   ],
 })
 export class AppModule {}

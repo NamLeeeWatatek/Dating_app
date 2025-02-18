@@ -22,6 +22,14 @@ export class InteractionsRelationalRepository implements InteractionRepository {
     @InjectRepository(InteractionEntity)
     private readonly interactionsRepository: Repository<InteractionEntity>,
   ) {}
+  async findOneByUserIds(
+    senderId: string,
+    receiverId: string,
+  ): Promise<NullableType<Interaction>> {
+    return this.interactionsRepository.findOne({
+      where: { senderUserId: senderId, receiverUserId: receiverId },
+    });
+  }
 
   async checkInteractionStatus(
     userId1: string,

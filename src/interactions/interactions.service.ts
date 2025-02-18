@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   FilterInteractionDto,
   SortInteractionDto,
@@ -21,14 +25,13 @@ export class InteractionsService {
     private readonly usersService: UsersService,
     private readonly redisService: RedisService,
   ) {}
-  private readonly redisFolder = 'interactions';
+  // private readonly redisFolder = 'interactions';
 
   async create(
     createInteractionDto: CreateInteractionDto,
   ): Promise<Interaction> {
     const { senderId, receiverId, type } = createInteractionDto;
 
-    // Kiểm tra người gửi & người nhận có tồn tại không
     const senderExists = await this.usersService.findById(senderId);
     if (!senderExists) {
       throw new NotFoundException(`Sender with ID ${senderId} not found`);
@@ -39,19 +42,25 @@ export class InteractionsService {
       throw new NotFoundException(`Receiver with ID ${receiverId} not found`);
     }
 
-    // 1️⃣ **Lưu vào database**
+    const existingInteraction =
+      await this.interactionsRepository.findOneByUserIds(senderId, receiverId);
+
+    if (existingInteraction) {
+      throw new ConflictException('Interaction already exists');
+    }
+    if (existingInteraction) {
+      throw new ConflictException('Interaction already exists');
+    }
+
     const interaction = await this.interactionsRepository.create({
       senderUserId: senderId,
       receiverUserId: receiverId,
       type,
     });
-    // 2️⃣ **Lưu vào Redis để truy vấn nhanh**
-    const redisKey = `interaction:${senderId}:${receiverId}`;
-    await this.redisService.set(this.redisFolder, redisKey, interaction, 3600);
-    const cachedData = await this.redisService.get(this.redisFolder, redisKey);
-    console.log('data set to cache', cachedData);
+
     return interaction;
   }
+
   async checkInteractionStatus(
     userId1: string,
     userId2: string,
