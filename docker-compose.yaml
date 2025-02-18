@@ -37,9 +37,9 @@ services:
       - ${REDIS_PORT}:6379
     restart: always
     volumes:
-      - ./config/redis.conf:/usr/local/etc/redis/redis.conf  # Mount file config vào container
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf # Mount file config vào container
       - redis_data:/data
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]  # Chạy Redis với file cấu hình
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf'] # Chạy Redis với file cấu hình
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
