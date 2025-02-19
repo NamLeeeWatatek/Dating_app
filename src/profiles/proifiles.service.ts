@@ -16,6 +16,7 @@ import { NullableType } from '../utils/types/nullable.type';
 import { PaginationResult } from '../utils/dto/pagination-result.dto';
 import { FilesFirebaseService } from '../files/infrastructure/uploader/firebase/files.service';
 import { FilesService } from '../files/files.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class ProfileService {
@@ -24,6 +25,7 @@ export class ProfileService {
     private readonly usersService: UsersService,
     private readonly firebaseStorageService: FilesFirebaseService,
     private readonly filesService: FilesService,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(createProfileDto: CreateProfileDto): Promise<Profile> {
@@ -99,12 +101,27 @@ export class ProfileService {
       });
     }
 
-    // Lấy danh sách file từ service
-    const files = await this.filesService.findByIds(fileIds);
+    const cacheFolder = 'profile_photos';
+    const cacheKey = fileIds.join(',');
 
-    // Trích xuất danh sách `path` từ files
+    // 1️⃣ Kiểm tra cache trước
+    const cachedImages = await this.redisService.get<string[]>(
+      cacheFolder,
+      cacheKey,
+    );
+    if (cachedImages) {
+      console.log('Cache hit:', cacheKey);
+      return { images: cachedImages }; // Không cần JSON.parse() vì đã trả về string[]
+    }
+
+    // 2️⃣ Nếu chưa có trong cache, lấy từ Firebase
+    const files = await this.filesService.findByIds(fileIds);
     const imagePaths = files.map((file) => file.path);
 
+    // 3️⃣ Lưu vào Redis (cache 1 giờ)
+    await this.redisService.set(cacheFolder, cacheKey, imagePaths, 3600);
+
+    console.log('Cache miss:', cacheKey);
     return { images: imagePaths };
   }
 

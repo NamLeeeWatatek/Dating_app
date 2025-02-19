@@ -9,6 +9,8 @@ import {
   UpdateDateColumn,
   OneToOne,
   OneToMany,
+  BeforeUpdate,
+  BeforeRemove,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -85,4 +87,12 @@ export class UserEntity extends EntityRelationalHelper {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @BeforeUpdate()
+  @BeforeRemove()
+  softDeleteProfile() {
+    if (this.deletedAt) {
+      this.profile!.deletedAt = new Date();
+    }
+  }
 }
