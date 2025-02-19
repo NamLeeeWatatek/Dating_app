@@ -24,7 +24,7 @@ export class ProfileService {
     private readonly usersService: UsersService,
     private readonly firebaseStorageService: FilesFirebaseService,
     private readonly filesService: FilesService,
-  ) { }
+  ) {}
 
   async create(createProfileDto: CreateProfileDto): Promise<Profile> {
     // Kiểm tra xem user có tồn tại không
