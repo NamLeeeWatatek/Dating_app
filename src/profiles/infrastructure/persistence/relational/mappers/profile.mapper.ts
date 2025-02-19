@@ -20,6 +20,7 @@ export class ProfileMapper {
     domainEntity.longitude = entity.longitude;
     domainEntity.latitude = entity.latitude;
     domainEntity.sexualOrientation = entity.sexualOrientation;
+
     return domainEntity;
   }
 
