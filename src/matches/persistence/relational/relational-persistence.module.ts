@@ -14,4 +14,4 @@ import { MatchesEntity } from './entities/match.entity';
   ],
   exports: [ProfileRepository],
 })
-export class RelationalMatchesPersistenceModule { }
+export class RelationalMatchesPersistenceModule {}

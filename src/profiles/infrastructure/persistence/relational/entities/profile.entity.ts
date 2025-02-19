@@ -1,62 +1,62 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
-  JoinColumn,
-  DeleteDateColumn,
-} from 'typeorm';
-import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
-import { Gender } from '../../../../enums/gender.enum';
-import { UserPreferenceEntity } from '../../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
+// import {
+//   Entity,
+//   PrimaryGeneratedColumn,
+//   Column,
+//   OneToOne,
+//   CreateDateColumn,
+//   UpdateDateColumn,
+//   JoinColumn,
+//   DeleteDateColumn,
+// } from 'typeorm';
+// import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
+// import { Gender } from '../../../../enums/gender.enum';
+// import { UserPreferenceEntity } from '../../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
 
-@Entity('profiles')
-export class ProfileEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-  userPreferences: UserPreferenceEntity;
-  @OneToOne(() => UserEntity, (user) => user.profile, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn()
-  user: UserEntity;
+// @Entity('profiles')
+// export class ProfileEntity {
+//   @PrimaryGeneratedColumn('uuid')
+//   id: string;
+//   userPreferences: UserPreferenceEntity;
+//   @OneToOne(() => UserEntity, (user) => user.profile, {
+//     eager: true,
+//     onDelete: 'CASCADE',
+//   })
+//   @JoinColumn()
+//   user: UserEntity;
 
-  @Column({ default: true })
-  isPublic: boolean;
+//   @Column({ default: true })
+//   isPublic: boolean;
 
-  @Column()
-  displayName: string;
+//   @Column()
+//   displayName: string;
 
-  @Column()
-  age: number;
+//   @Column()
+//   age: number;
 
-  @Column()
-  gender: Gender;
+//   @Column()
+//   gender: Gender;
 
-  @Column('text', { array: true, nullable: false })
-  sexualOrientation: string[];
+//   @Column('text', { array: true, nullable: false })
+//   sexualOrientation: string[];
 
-  @Column({ nullable: true })
-  bio?: string;
+//   @Column({ nullable: true })
+//   bio?: string;
 
-  @Column({ nullable: true })
-  location?: string;
+//   @Column({ nullable: true })
+//   location?: string;
 
-  @Column('text', { array: true, nullable: true })
-  files?: string[];
+//   @Column('text', { array: true, nullable: true })
+//   files?: string[];
 
-  @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
-  latitude?: number;
+//   @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
+//   latitude?: number;
 
-  @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
-  longitude?: number;
+//   @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
+//   longitude?: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
+//   @CreateDateColumn()
+//   createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
-}
+//   @UpdateDateColumn()
+//   updatedAt: Date;
+// }

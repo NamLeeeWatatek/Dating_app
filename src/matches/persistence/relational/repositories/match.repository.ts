@@ -18,7 +18,7 @@ export class ProfilesRelationalRepository implements ProfileRepository {
   constructor(
     @InjectRepository(ProfileEntity)
     private readonly profilesRepository: Repository<ProfileEntity>,
-  ) { }
+  ) {}
 
   async create(data: Profile): Promise<Profile> {
     const persistenceModel = ProfileMapper.toPersistence(data);
