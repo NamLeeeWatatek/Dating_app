@@ -20,15 +20,7 @@ export class DiscoveryController {
 
   @Get('search')
   async findMatchingUsers(@Query() query: QueryDiscoveryDto, @Request() req) {
-    const {
-      page = 1,
-      limit = 10,
-      sort,
-      ageRange,
-      distanceRange,
-      gender,
-      location,
-    } = query;
+    const { page = 1, limit = 10, ageRange, distanceRange } = query;
     const paginationOptions = { page, limit };
     const userId = req.user.id;
     if (!userId || !userId) {
@@ -37,8 +29,7 @@ export class DiscoveryController {
     console.log(query);
     const result = await this.discoveryService.findMatchingUsers({
       userId,
-      filterOptions: { ageRange, distanceRange, gender, location },
-      sortOptions: sort,
+      filterOptions: { ageRange, distanceRange },
       paginationOptions,
     });
 
