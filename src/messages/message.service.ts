@@ -1,3 +1,4 @@
+import { MessageGateway } from './gateway/message.gateway';
 import {
   HttpStatus,
   Injectable,
@@ -18,6 +19,7 @@ export class MessageService {
   constructor(
     private readonly messageRepository: MessageRepository,
     private readonly usersService: UsersService,
+    private readonly messageGateway: MessageGateway,
   ) {}
 
   async create(createDto: CreateMessageDto): Promise<Message> {
@@ -49,6 +51,11 @@ export class MessageService {
     newMessage.createdAt = new Date();
 
     console.log('newMessage', newMessage);
+
+    this.messageGateway.sendMessageToUser(newMessage.receiver.id, {
+      senderId: newMessage.sender.id,
+      content: newMessage.messageContent,
+    });
 
     // Lưu tin nhắn vào cơ sở dữ liệu
     return this.messageRepository.create(newMessage);

@@ -4,7 +4,6 @@ import { MessageEntity } from '../entities/message.entity';
 
 export class MessageMapper {
   static toDomain(raw: MessageEntity): Message {
-    console.log('raw: ', raw);
     const domainEntity = new Message();
     domainEntity.id = raw.id;
     domainEntity.messageContent = raw.messageContent;
@@ -14,8 +13,6 @@ export class MessageMapper {
 
     if (raw.sender) domainEntity.sender = UserMapper.toDomain(raw.sender);
     if (raw.receiver) domainEntity.receiver = UserMapper.toDomain(raw.receiver);
-
-    console.log('first,', domainEntity);
 
     return domainEntity;
   }

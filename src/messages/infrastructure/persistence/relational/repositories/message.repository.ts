@@ -46,8 +46,6 @@ export class MessageRelationalRepository implements MessageRepository {
       relations: ['sender', 'receiver'],
     });
 
-    console.log('helooo', entities);
-
     return {
       data: entities.map((message) => MessageMapper.toDomain(message)),
       totalItems,
