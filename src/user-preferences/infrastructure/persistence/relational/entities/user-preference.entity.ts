@@ -25,7 +25,6 @@ import {
   SocialMedia,
   ZodiacSign,
 } from '../../../../../utils/enums/preferences.enum';
-import { ProfileEntity } from '../../../../../profiles/infrastructure/persistence/relational/entities/profile.entity';
 
 @Entity({
   name: 'user-preference',
@@ -33,9 +32,7 @@ import { ProfileEntity } from '../../../../../profiles/infrastructure/persistenc
 export class UserPreferenceEntity extends EntityRelationalHelper {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @OneToOne(() => ProfileEntity, (profile) => profile.userPreferences)
-  @JoinColumn() // Thêm JoinColumn nếu là quan hệ one-to-one
-  profile: ProfileEntity; // Thêm thuộc tính profile
+
   @OneToOne(() => UserEntity, { eager: true, cascade: true })
   @JoinColumn({ name: 'userId' }) // Thêm JoinColumn để xác định khóa ngoại
   user!: UserEntity;

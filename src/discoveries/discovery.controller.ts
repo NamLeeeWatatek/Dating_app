@@ -23,9 +23,10 @@ export class DiscoveryController {
     const { page = 1, limit = 10, ageRange, distanceRange } = query;
     const paginationOptions = { page, limit };
     const userId = req.user.id;
-    if (!userId || !userId) {
-      throw new Error('User or user id is undefined');
+    if (!userId) {
+      throw new Error('User ID is undefined');
     }
+
     console.log(query);
     const result = await this.discoveryService.findMatchingUsers({
       userId,

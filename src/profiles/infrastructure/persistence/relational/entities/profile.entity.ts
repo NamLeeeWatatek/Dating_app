@@ -1,62 +1,61 @@
-// import {
-//   Entity,
-//   PrimaryGeneratedColumn,
-//   Column,
-//   OneToOne,
-//   CreateDateColumn,
-//   UpdateDateColumn,
-//   JoinColumn,
-//   DeleteDateColumn,
-// } from 'typeorm';
-// import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
-// import { Gender } from '../../../../enums/gender.enum';
-// import { UserPreferenceEntity } from '../../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+  DeleteDateColumn,
+} from 'typeorm';
+import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { Gender } from '../../../../enums/gender.enum';
 
-// @Entity('profiles')
-// export class ProfileEntity {
-//   @PrimaryGeneratedColumn('uuid')
-//   id: string;
-//   userPreferences: UserPreferenceEntity;
-//   @OneToOne(() => UserEntity, (user) => user.profile, {
-//     eager: true,
-//     onDelete: 'CASCADE',
-//   })
-//   @JoinColumn()
-//   user: UserEntity;
+@Entity('profiles')
+export class ProfileEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-//   @Column({ default: true })
-//   isPublic: boolean;
+  @OneToOne(() => UserEntity, (user) => user.profile, { eager: true })
+  @JoinColumn()
+  user: UserEntity;
 
-//   @Column()
-//   displayName: string;
+  @Column({ default: true })
+  isPublic: boolean;
 
-//   @Column()
-//   age: number;
+  @Column()
+  displayName: string;
 
-//   @Column()
-//   gender: Gender;
+  @Column()
+  age: number;
 
-//   @Column('text', { array: true, nullable: false })
-//   sexualOrientation: string[];
+  @Column()
+  gender: Gender;
 
-//   @Column({ nullable: true })
-//   bio?: string;
+  @Column('text', { array: true, nullable: false })
+  sexualOrientation: string[];
 
-//   @Column({ nullable: true })
-//   location?: string;
+  @Column({ nullable: true })
+  bio?: string;
 
-//   @Column('text', { array: true, nullable: true })
-//   files?: string[];
+  @Column({ nullable: true })
+  location?: string;
 
-//   @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
-//   latitude?: number;
+  @Column('text', { array: true, nullable: true })
+  files?: string[];
 
-//   @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
-//   longitude?: number;
+  @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
+  latitude?: number;
 
-//   @CreateDateColumn()
-//   createdAt: Date;
+  @Column({ type: 'numeric', precision: 9, scale: 6, nullable: true })
+  longitude?: number;
 
-//   @UpdateDateColumn()
-//   updatedAt: Date;
-// }
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+}

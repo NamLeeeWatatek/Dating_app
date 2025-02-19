@@ -6,6 +6,7 @@ import { RelationalProfilePersistenceModule } from './infrastructure/persistence
 import { FirebaseModule } from '../firebase/firebase.module';
 import { FilesFirebaseModule } from '../files/infrastructure/uploader/firebase/files.module';
 import { FilesModule } from '../files/files.module';
+import { RedisModule } from '../redis/redis.module';
 const infrastructurePersistenceModule = RelationalProfilePersistenceModule;
 
 @Module({
@@ -16,6 +17,7 @@ const infrastructurePersistenceModule = RelationalProfilePersistenceModule;
     UsersModule,
     FilesFirebaseModule,
     FilesModule,
+    RedisModule,
   ],
   controllers: [ProfileController],
   providers: [ProfileService, infrastructurePersistenceModule],

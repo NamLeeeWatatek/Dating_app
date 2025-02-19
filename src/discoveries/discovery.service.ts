@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Between, In, Raw, Repository } from 'typeorm';
 import { Profile } from '../profiles/domain/profile';
 import { FilterDiscoveryDto } from './dto/query-discovery.dto';
@@ -44,6 +44,13 @@ export class DiscoveryService {
       where: { user: { id: userId } },
     });
 
+    // Kiểm tra nếu userProfile không tồn tại
+    if (!userProfile) {
+      throw new NotFoundException(
+        `Không tìm thấy profile của userId: ${userId}`,
+      );
+    }
+
     const [userLat, userLng] = [userProfile?.latitude, userProfile?.longitude];
 
     if (userProfile?.sexualOrientation?.length) {
@@ -83,6 +90,13 @@ export class DiscoveryService {
       const otherUserPreferences = await this.userReferenceRepository.find({
         where: { user: { id: entity.user.id } },
       });
+
+      // Kiểm tra nếu userProfile không tồn tại
+      if (!otherUserPreferences) {
+        throw new NotFoundException(
+          `Không tìm thấy profile của userId: ${entity.user.id}`,
+        );
+      }
 
       // Nếu người tìm kiếm chưa có sở thích, không xét điều kiện sở thích
       if (userPreferences.length > 0) {

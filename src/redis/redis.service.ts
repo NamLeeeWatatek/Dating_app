@@ -22,7 +22,6 @@ export class RedisService {
   async get<T>(folder: string, key: string): Promise<T | null> {
     const fullKey = this.formatKey(folder, key);
     const data = await this.redis.get(fullKey);
-    console.log(`🔍 [Redis] Get: ${fullKey} ->`, data);
     return data ? JSON.parse(data) : null;
   }
 
