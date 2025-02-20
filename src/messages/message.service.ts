@@ -13,6 +13,7 @@ import { Message } from './domain/messsage';
 import { UsersService } from '../users/users.service';
 import { MessageStatus } from './enums/status.enum';
 import { UpdateReadAtDto } from './dto/update-read-at.dto';
+import { ConversationService } from '../conversations/conversation.service';
 
 @Injectable()
 export class MessageService {
@@ -20,45 +21,63 @@ export class MessageService {
     private readonly messageRepository: MessageRepository,
     private readonly usersService: UsersService,
     private readonly messageGateway: MessageGateway,
+    private readonly conversationService: ConversationService,
   ) {}
 
   async create(createDto: CreateMessageDto): Promise<Message> {
     const receiver = await this.usersService.findById(createDto.receiverId);
     const sender = await this.usersService.findById(createDto.senderId);
+
     if (!receiver) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          receiverId: 'userNotFound',
-        },
+        errors: { receiverId: 'userNotFound' },
       });
     }
 
     if (!sender) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          senderId: 'userNotFound',
-        },
+        errors: { senderId: 'userNotFound' },
       });
     }
 
+    // Kiểm tra xem đã tồn tại đoạn hội thoại giữa 2 user chưa
+    let conversation = await this.conversationService.findBy2UserIds({
+      userId1: sender.id,
+      userId2: receiver.id,
+    });
+
+    // Nếu chưa có đoạn hội thoại thì tạo mới
+    if (!conversation) {
+      conversation = await this.conversationService.create(
+        { user1Id: sender.id, user2Id: receiver.id },
+        null,
+      );
+    }
+
+    // Tạo tin nhắn mới
     const newMessage = new Message();
     newMessage.sender = sender;
     newMessage.receiver = receiver;
     newMessage.messageContent = createDto.messageContent;
     newMessage.status = MessageStatus.SENT;
     newMessage.createdAt = new Date();
-
-    console.log('newMessage', newMessage);
+    newMessage.conversation = conversation;
 
     this.messageGateway.sendMessageToUser(newMessage.receiver.id, {
       senderId: newMessage.sender.id,
       content: newMessage.messageContent,
     });
 
-    // Lưu tin nhắn vào cơ sở dữ liệu
-    return this.messageRepository.create(newMessage);
+    const createdMessage = await this.messageRepository.create(newMessage);
+
+    await this.conversationService.updateLastMessage(
+      conversation.id,
+      createdMessage,
+    );
+
+    return createdMessage;
   }
 
   async findManyWithPagination({

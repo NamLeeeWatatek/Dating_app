@@ -58,4 +58,3 @@ export class MatchesRelationalRepository implements MatchRepository {
     await this.matchRepo.delete(id);
   }
 }
-

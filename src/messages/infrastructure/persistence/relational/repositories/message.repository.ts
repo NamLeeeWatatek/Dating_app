@@ -55,6 +55,7 @@ export class MessageRelationalRepository implements MessageRepository {
   async update(id: Message['id'], payload: Partial<Message>): Promise<Message> {
     const entity = await this.messageRepository.findOne({
       where: { id: id },
+      relations: ['conversation'],
     });
 
     if (!entity) {
@@ -74,18 +75,20 @@ export class MessageRelationalRepository implements MessageRepository {
   }
 
   async remove(id: Message['id']): Promise<void> {
-    await this.messageRepository.softDelete(id);
+    await this.messageRepository.delete(id);
   }
 
   async findLatestUnreadMessage(
     senderId: User['id'],
     receiverId: User['id'],
   ): Promise<Message | null> {
-    return this.messageRepository.findOne({
+    const messageEntity = await this.messageRepository.findOne({
       where: { senderId, receiverId, readAt: IsNull() },
       order: { createdAt: 'DESC' },
       select: ['createdAt'],
     });
+
+    return messageEntity ? MessageMapper.toDomain(messageEntity) : null;
   }
 
   async markMessagesAsRead(

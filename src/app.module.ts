@@ -37,6 +37,7 @@ import { MessageModule } from './messages/message.module';
 import { DiscoveryModule } from './discoveries/discovery.module';
 import { MatchModule } from './matches/matches.module';
 import { InteractionModule } from './interactions/interactions.module';
+import { ConversationModule } from './conversations/conversation.module';
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
   dataSourceFactory: async (options: DataSourceOptions) => {
@@ -95,6 +96,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     RedisModule,
     DiscoveryModule,
     MatchModule,
+    ConversationModule,
     FirebaseModule,
     InteractionModule,
     MessageModule,

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { User } from '../../users/domain/user';
 import { MessageStatus } from '../enums/status.enum';
+import { Conversation } from '../../conversations/domain/conversation';
 
 export class Message {
   @ApiProperty({
@@ -48,4 +49,10 @@ export class Message {
   })
   @Expose()
   receiver: User;
+
+  @ApiProperty({
+    type: () => Conversation,
+  })
+  @Expose()
+  conversation: Conversation;
 }

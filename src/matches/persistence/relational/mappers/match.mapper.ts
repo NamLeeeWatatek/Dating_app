@@ -23,4 +23,3 @@ export class MatchMapper {
     return entity;
   }
 }
-

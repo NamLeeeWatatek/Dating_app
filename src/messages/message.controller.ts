@@ -89,8 +89,8 @@ export class MessageController {
 
     const { data: entityData, totalItems } =
       await this.messageService.findManyWithPagination({
-        senderId: query.senderId,
-        receiverId: query.receiverId,
+        senderId: query.user1Id,
+        receiverId: query.user2Id,
         paginationOptions: {
           page,
           limit,
@@ -107,7 +107,6 @@ export class MessageController {
   async markMessagesAsRead(
     @Body() updateReadAtDto: UpdateReadAtDto,
   ): Promise<void> {
-    console.log('updateReadAtDto: ', updateReadAtDto);
     return this.messageService.markMessagesAsRead(updateReadAtDto);
   }
 
