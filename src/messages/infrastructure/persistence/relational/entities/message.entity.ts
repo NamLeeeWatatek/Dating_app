@@ -8,19 +8,20 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { MessageStatus } from '../../../../enums/status.enum';
+import { ConversationEntity } from '../../../../../conversations/infrastructure/persistence/relational/entities/conversation.entity';
 
 @Entity({
-  name: 'message',
+  name: 'messages',
 })
 export class MessageEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  senderId: string;
+  senderId: UserEntity['id'];
 
   @Column()
-  receiverId: string;
+  receiverId: UserEntity['id'];
 
   @Column('text')
   messageContent: string;
@@ -48,4 +49,17 @@ export class MessageEntity {
     eager: false,
   })
   receiver: UserEntity;
+
+  @Column()
+  conversationId: ConversationEntity['id'];
+
+  @ManyToOne(
+    () => ConversationEntity,
+    (conversation) => conversation.messages,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'conversationId' })
+  conversation: ConversationEntity;
 }

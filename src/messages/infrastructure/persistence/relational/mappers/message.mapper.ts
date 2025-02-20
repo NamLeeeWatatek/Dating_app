@@ -1,3 +1,6 @@
+import { Conversation } from '../../../../../conversations/domain/conversation';
+import { ConversationMapper } from '../../../../../conversations/infrastructure/persistence/relational/mappers/conversation.mapper';
+import { User } from '../../../../../users/domain/user';
 import { UserMapper } from '../../../../../users/infrastructure/persistence/relational/mappers/user.mapper';
 import { Message } from '../../../../domain/messsage';
 import { MessageEntity } from '../entities/message.entity';
@@ -11,8 +14,25 @@ export class MessageMapper {
     domainEntity.status = raw.status;
     domainEntity.readAt = raw.readAt;
 
-    if (raw.sender) domainEntity.sender = UserMapper.toDomain(raw.sender);
-    if (raw.receiver) domainEntity.receiver = UserMapper.toDomain(raw.receiver);
+    if (raw.sender) {
+      domainEntity.sender = UserMapper.toDomain(raw.sender);
+    } else {
+      domainEntity.sender = new User();
+      domainEntity.sender.id = raw.senderId;
+    }
+    if (raw.receiver) {
+      domainEntity.receiver = UserMapper.toDomain(raw.receiver);
+    } else {
+      domainEntity.receiver = new User();
+      domainEntity.receiver.id = raw.receiverId;
+    }
+
+    if (raw.conversation) {
+      domainEntity.conversation = ConversationMapper.toDomain(raw.conversation);
+    } else {
+      domainEntity.conversation = new Conversation();
+      domainEntity.conversation.id = raw.conversationId;
+    }
 
     return domainEntity;
   }
@@ -31,6 +51,10 @@ export class MessageMapper {
     persistenceEntity.sender = UserMapper.toPersistence(domainEntity.sender);
     persistenceEntity.receiver = UserMapper.toPersistence(
       domainEntity.receiver,
+    );
+
+    persistenceEntity.conversation = ConversationMapper.toPersistence(
+      domainEntity.conversation,
     );
 
     return persistenceEntity;

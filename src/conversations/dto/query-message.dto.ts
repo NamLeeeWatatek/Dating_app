@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class QueryMessageDto {
+export class QueryConversationDto {
   @ApiPropertyOptional()
   @Transform(({ value }) => (value ? Number(value) : 1))
   @IsNumber()
@@ -17,9 +17,5 @@ export class QueryMessageDto {
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
-  user1Id: string;
-
-  @ApiProperty({ type: String })
-  @IsNotEmpty()
-  user2Id: string;
+  userId: string;
 }

@@ -29,7 +29,6 @@ export class DiscoveryController {
     const { page = 1, limit = 10, sort, filter } = query;
     const paginationOptions = { page, limit };
     const userId = req.user.id;
-    console.log(query);
     const result = await this.discoveryService.findMatchingUsers({
       userId,
       filterOptions: filter,

@@ -23,6 +23,7 @@ export class MessageDto {
     this.status = message.status;
     this.readAt = message.readAt;
     this.senderId = message.sender.id;
-    this.receiverId = message.id;
+    this.receiverId = message.receiver.id;
+    this.createdAt = message.createdAt;
   }
 }
