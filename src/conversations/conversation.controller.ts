@@ -20,7 +20,10 @@ import { infinityPagination } from '../utils/infinity-pagination';
 import { FindConversationQueryDto } from './dto/find-conversation.dto';
 
 @ApiTags('Conversations')
-@Controller('conversations')
+@Controller({
+  path: 'conversations',
+  version: '1',
+})
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
