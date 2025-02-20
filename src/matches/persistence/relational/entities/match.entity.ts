@@ -1,3 +1,4 @@
+import { UserEntity } from '../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,7 +6,6 @@ import {
   CreateDateColumn,
   Unique,
 } from 'typeorm';
-import { UserEntity } from '../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
 
 @Entity('matches')
 @Unique(['user', 'matchedUser']) // Đảm bảo không có match trùng

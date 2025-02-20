@@ -1,156 +1,70 @@
-// import {
-//   ConflictException,
-//   HttpStatus,
-//   Injectable,
-//   NotFoundException,
-//   UnprocessableEntityException,
-// } from '@nestjs/common';
-// import { UsersService } from '../users/users.service';
-// import { IPaginationOptions } from '../utils/types/pagination-options';
-// import { NullableType } from '../utils/types/nullable.type';
-// import { PaginationResult } from '../utils/dto/pagination-result.dto';
-// import { FilesFirebaseService } from '../files/infrastructure/uploader/firebase/files.service';
-// import { FilesService } from '../files/files.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Match } from './domain/match';
+import { MatchRepository } from './persistence/match.repository';
+import { MessageGateway } from '../messages/gateway/message.gateway';
+import { InteractionRepository } from '../interactions/infrastructure/persistence/interaction.repository';
+import { ErrorResponseDto } from '../utils/dto/error-response.dto';
 
-// @Injectable()
-// export class ProfileService {
-//   constructor(
-//     private readonly profileRepository: ProfileRepository,
-//     private readonly usersService: UsersService,
-//     private readonly firebaseStorageService: FilesFirebaseService,
-//     private readonly filesService: FilesService,
-//   ) { }
+@Injectable()
+export class MatchService {
+  constructor(
+    private readonly matchRepository: MatchRepository,
+    private readonly messageGateway: MessageGateway,
+    private readonly interactionRepository: InteractionRepository,
+  ) {}
 
-//   async create(createProfileDto: CreateProfileDto): Promise<Profile> {
-//     // Kiểm tra xem user có tồn tại không
-//     const user = await this.usersService.findById(createProfileDto.userId);
-//     if (!user) {
-//       throw new UnprocessableEntityException({
-//         status: HttpStatus.UNPROCESSABLE_ENTITY,
-//         errors: {
-//           userId: 'userNotFound',
-//         },
-//       });
-//     }
-//     const existingProfile = await this.profileRepository.findByUserId(
-//       createProfileDto.userId,
-//     );
-//     if (existingProfile) {
-//       throw new ConflictException({
-//         status: HttpStatus.CONFLICT,
-//         errors: {
-//           userId: 'profileAlreadyExists',
-//         },
-//       });
-//     }
-//     return this.profileRepository.create({
-//       user,
-//       displayName: createProfileDto.displayName,
-//       age: createProfileDto.age,
-//       gender: createProfileDto.gender,
-//       bio: createProfileDto.bio,
-//       sexualOrientation: createProfileDto.sexualOrientation,
-//       isPublic: createProfileDto.isPublic,
-//       location: createProfileDto.location,
-//       latitude: createProfileDto.latitude,
-//       longitude: createProfileDto.longitude,
-//     });
-//   }
-//   async findByUserId(userId: string): Promise<NullableType<Profile>> {
-//     return this.profileRepository.findByUserId(userId);
-//   }
-//   async uploadProfilePhotos(
-//     userId: string,
-//     files: Express.Multer.File[],
-//   ): Promise<string[]> {
-//     const profile = await this.profileRepository.findByUserId(userId);
-//     if (!profile) {
-//       throw new NotFoundException({
-//         status: HttpStatus.NOT_FOUND,
-//         errors: { userId: 'profileNotFound' },
-//       });
-//     }
+  async createMatch(userId: string, matchedUserId: string): Promise<Match> {
+    // Kiểm tra nếu match đã tồn tại
+    const existingMatch = await this.matchRepository.findByUserIds(
+      userId,
+      matchedUserId,
+    );
+    if (existingMatch) {
+      throw new Error('Match already exists');
+    }
 
-//     // 1. Upload và lưu file vào database
-//     const savedFiles = await this.firebaseStorageService.createMultiple(
-//       files,
-//       'uploads/profiles',
-//     );
+    // Kiểm tra nếu hai người đã LIKE/SUPERLIKE lẫn nhau
+    const isMutual = await this.interactionRepository.checkMatch(
+      userId,
+      matchedUserId,
+    );
+    if (!isMutual) {
+      throw new BadRequestException(
+        new ErrorResponseDto(
+          400,
+          'Users have not mutually liked or superliked each other',
+          'No mutual like or superlike detected',
+        ),
+      );
+    }
 
-//     // 2. Lấy danh sách ID của các file đã lưu
-//     const fileIds = savedFiles.files.map((file) => file.id);
+    // Tạo match mới
+    const match = Match.create(userId, matchedUserId);
+    const savedMatch = await this.matchRepository.create(match);
 
-//     // 3. Cập nhật profile với danh sách ID file thay vì URL
-//     profile.files = [...(profile.files || []), ...fileIds];
-//     await this.profileRepository.update(profile.id, { files: profile.files });
+    // Gửi thông báo match qua WebSocket
+    this.messageGateway.sendMatchNotification(userId, matchedUserId);
+    this.messageGateway.sendMatchNotification(matchedUserId, userId);
 
-//     return fileIds;
-//   }
-//   async getProfilePhotos(fileIds: string[]): Promise<{ images: string[] }> {
-//     if (!fileIds || fileIds.length === 0) {
-//       throw new UnprocessableEntityException({
-//         status: HttpStatus.UNPROCESSABLE_ENTITY,
-//         errors: { fileIds: 'fileIdsRequired' },
-//       });
-//     }
+    return savedMatch;
+  }
 
-//     // Lấy danh sách file từ service
-//     const files = await this.filesService.findByIds(fileIds);
+  async getUserMatches(userId: string): Promise<Match[]> {
+    return await this.matchRepository.findByUserId(userId);
+  }
 
-//     // Trích xuất danh sách `path` từ files
-//     const imagePaths = files.map((file) => file.path);
-
-//     return { images: imagePaths };
-//   }
-
-//   async findManyWithPagination({
-//     filterOptions,
-//     sortOptions,
-//     paginationOptions,
-//   }: {
-//     filterOptions?: FilterProfileDto | null;
-//     sortOptions?: SortProfileDto[] | null;
-//     paginationOptions: IPaginationOptions;
-//   }): Promise<PaginationResult<Profile>> {
-//     return this.profileRepository.findManyWithPagination({
-//       filterOptions,
-//       sortOptions,
-//       paginationOptions,
-//     });
-//   }
-
-//   async findById(id: Profile['id']): Promise<NullableType<Profile>> {
-//     return this.profileRepository.findById(id);
-//   }
-
-//   async update(
-//     id: Profile['id'],
-//     updateProfileDto: UpdateProfileDto,
-//   ): Promise<Profile | null> {
-//     // Kiểm tra xem profile có tồn tại không
-//     const existingProfile = await this.profileRepository.findById(id);
-//     if (!existingProfile) {
-//       throw new UnprocessableEntityException({
-//         status: HttpStatus.UNPROCESSABLE_ENTITY,
-//         errors: {
-//           id: 'profileNotFound',
-//         },
-//       });
-//     }
-
-//     return this.profileRepository.update(id, {
-//       displayName: updateProfileDto.displayName,
-//       age: updateProfileDto.age,
-//       gender: updateProfileDto.gender,
-//       bio: updateProfileDto.bio,
-//       sexualOrientation: updateProfileDto.sexualOrientation,
-//       isPublic: updateProfileDto.isPublic,
-//       location: updateProfileDto.location,
-//       longitude: updateProfileDto.longitude,
-//       latitude: updateProfileDto.latitude,
-//     });
-//   }
-//   async remove(id: Profile['id']): Promise<void> {
-//     await this.profileRepository.remove(id);
-//   }
-// }
+  async deleteMatch(userId: string, matchedUserId: string): Promise<void> {
+    const match = await this.matchRepository.findByUserIds(
+      userId,
+      matchedUserId,
+    );
+    if (!match) {
+      throw new NotFoundException('Match not found');
+    }
+    await this.matchRepository.remove(match.id);
+  }
+}

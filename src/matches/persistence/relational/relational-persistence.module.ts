@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProfilesRelationalRepository } from './repositories/match.repository';
-import { ProfileRepository } from '../match.repository';
 import { MatchesEntity } from './entities/match.entity';
+import { MatchRepository } from '../match.repository';
+import { MatchesRelationalRepository } from './repositories/match.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([MatchesEntity])],
   providers: [
     {
-      provide: ProfileRepository,
-      useClass: ProfilesRelationalRepository,
+      provide: MatchRepository,
+      useClass: MatchesRelationalRepository,
     },
   ],
-  exports: [ProfileRepository],
+  exports: [MatchRepository],
 })
 export class RelationalMatchesPersistenceModule {}

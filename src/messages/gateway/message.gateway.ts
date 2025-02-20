@@ -87,4 +87,16 @@ export class MessageGateway
       console.log(`User ${userId} is offline`);
     }
   }
+
+  sendMatchNotification(userId: string, matchedUserId: string) {
+    const socketId = this.activeUsers.get(userId);
+    if (socketId) {
+      this.server
+        .to(socketId)
+        .emit('match_notification', { matchedWith: matchedUserId });
+      console.log(`Sent match notification to ${userId}`);
+    } else {
+      console.log(`User ${userId} is offline, cannot send match notification`);
+    }
+  }
 }
