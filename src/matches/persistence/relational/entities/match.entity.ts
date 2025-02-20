@@ -1,24 +1,24 @@
-// import {
-//   Entity,
-//   PrimaryGeneratedColumn,
-//   ManyToOne,
-//   CreateDateColumn,
-//   Unique,
-// } from 'typeorm';
-// import { UserEntity } from '../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
+import { UserEntity } from '../../../../user-preferences/infrastructure/persistence/relational/entities/user-preference.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+  Unique,
+} from 'typeorm';
 
-// @Entity('matches')
-// @Unique(['user', 'matchedUser']) // Đảm bảo không có match trùng
-// export class MatchesEntity {
-//   @PrimaryGeneratedColumn('uuid')
-//   id: string;
+@Entity('matches')
+@Unique(['user', 'matchedUser']) // Đảm bảo không có match trùng
+export class MatchesEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-//   @ManyToOne(() => UserEntity, (user) => user.matches, { onDelete: 'CASCADE' })
-//   user: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.matches, { onDelete: 'CASCADE' })
+  user: UserEntity;
 
-//   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-//   matchedUser: UserEntity;
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  matchedUser: UserEntity;
 
-//   @CreateDateColumn()
-//   matchedAt: Date;
-// }
+  @CreateDateColumn()
+  matchedAt: Date;
+}

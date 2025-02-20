@@ -20,6 +20,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { ProfileEntity } from '../../../../../profiles/infrastructure/persistence/relational/entities/profile.entity';
 import { InteractionEntity } from '../../../../../interactions/infrastructure/persistence/relational/entities/interaction.entity';
 import { PotentialMatchEntity } from '../../../../../potential-match/infrastructure/persistence/relational/entities/potential-match.entity';
+import { MatchesEntity } from '../../../../../matches/persistence/relational/entities/match.entity';
 
 @Entity({
   name: 'user',
@@ -95,4 +96,7 @@ export class UserEntity extends EntityRelationalHelper {
       this.profile!.deletedAt = new Date();
     }
   }
+
+  @OneToMany(() => MatchesEntity, (match) => match.user, { cascade: true })
+  matches: MatchesEntity[];
 }

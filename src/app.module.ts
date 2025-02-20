@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { FilesModule } from './files/files.module';
+// import { FilesModule } from './files/files.module';
 import { AuthModule } from './auth/auth.module';
 import databaseConfig from './database/config/database.config';
 import authConfig from './auth/config/auth.config';
@@ -27,15 +27,16 @@ import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ProfileModule } from './profiles/profiles.module';
-import { InteractionModule } from './interactions/infrastructure/persistence/relational/relational-persistence.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { FirebaseModule } from './firebase/firebase.module';
-import { PotentialMatchModule } from './potential-match/potential-matches.module';
+// import { PotentialMatchModule } from './potential-match/potential-matches.module';
 // import { redisStore } from 'cache-manager-redis-yet';
 import { RedisModule } from './redis/redis.module';
 import { MessageModule } from './messages/message.module';
 
 import { DiscoveryModule } from './discoveries/discovery.module';
+import { MatchModule } from './matches/matches.module';
+import { InteractionModule } from './interactions/interactions.module';
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
   dataSourceFactory: async (options: DataSourceOptions) => {
@@ -88,15 +89,15 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
       inject: [ConfigService],
     }),
     AuthModule,
-    RedisModule,
     UserPreferencesModule,
-    FirebaseModule,
-    UsersModule,
     ProfileModule,
+    UsersModule,
+    RedisModule,
+    DiscoveryModule,
+    MatchModule,
+    FirebaseModule,
     InteractionModule,
     MessageModule,
-    PotentialMatchModule,
-    FilesModule,
     AuthFacebookModule,
     AuthGoogleModule,
     AuthTwitterModule,
@@ -104,7 +105,6 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     SessionModule,
     MailModule,
     MailerModule,
-    DiscoveryModule,
   ],
 })
 export class AppModule {}

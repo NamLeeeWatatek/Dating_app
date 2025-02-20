@@ -1,113 +1,61 @@
-// import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { FindOptionsWhere, Repository, In } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MatchesEntity } from '../entities/match.entity';
+import { MatchRepository } from '../../match.repository';
+import { Match } from '../../../domain/match';
+import { MatchMapper } from '../mappers/match.mapper';
 
-// import { ProfileEntity } from '../entities/match.entity';
-// import { NullableType } from '../../../../../utils/types/nullable.type';
-// import {
-//   FilterProfileDto,
-//   SortProfileDto,
-// } from '../../../../dto/query-profile.dto';
-// import { Profile } from '../../../../domain/profile';
-// import { ProfileRepository } from '../../match.repository';
-// import { ProfileMapper } from '../mappers/match.mapper';
-// import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+@Injectable()
+export class MatchesRelationalRepository implements MatchRepository {
+  constructor(
+    @InjectRepository(MatchesEntity)
+    private readonly matchRepo: Repository<MatchesEntity>,
+  ) {}
 
-// @Injectable()
-// export class ProfilesRelationalRepository implements ProfileRepository {
-//   constructor(
-//     @InjectRepository(ProfileEntity)
-//     private readonly profilesRepository: Repository<ProfileEntity>,
-//   ) {}
+  async create(data: Omit<Match, 'id' | 'matchedAt'>): Promise<Match> {
+    const match = new Match(
+      crypto.randomUUID(),
+      data.userId,
+      data.matchedUserId,
+      new Date(),
+    );
 
-//   async create(data: Profile): Promise<Profile> {
-//     const persistenceModel = ProfileMapper.toPersistence(data);
-//     const newEntity = await this.profilesRepository.save(
-//       this.profilesRepository.create(persistenceModel),
-//     );
-//     return ProfileMapper.toDomain(newEntity);
-//   }
+    const entity = MatchMapper.toPersistence(match);
+    const savedEntity = await this.matchRepo.save(entity);
+    return MatchMapper.toDomain(savedEntity);
+  }
 
-//   async findManyWithPagination({
-//     filterOptions,
-//     sortOptions,
-//     paginationOptions,
-//   }: {
-//     filterOptions?: FilterProfileDto | null;
-//     sortOptions?: SortProfileDto[] | null;
-//     paginationOptions: IPaginationOptions;
-//   }): Promise<{ data: Profile[]; totalItems: number }> {
-//     const where: FindOptionsWhere<ProfileEntity> = {};
+  async findById(id: string): Promise<Match | null> {
+    const entity = await this.matchRepo.findOne({ where: { id } });
+    return entity ? MatchMapper.toDomain(entity) : null;
+  }
 
-//     if (filterOptions?.users?.length) {
-//       where.user = { id: In(filterOptions.users.map((id) => Number(id))) };
-//     }
+  async findByUserIds(
+    userId: string,
+    matchedUserId: string,
+  ): Promise<Match | null> {
+    const entity = await this.matchRepo.findOne({
+      where: [
+        { user: { id: userId }, matchedUser: { id: matchedUserId } },
+        { user: { id: matchedUserId }, matchedUser: { id: userId } },
+      ],
+    });
 
-//     const [entities, totalItems] = await this.profilesRepository.findAndCount({
-//       skip: (paginationOptions.page - 1) * paginationOptions.limit,
-//       take: paginationOptions.limit,
-//       where,
-//       order: sortOptions?.reduce(
-//         (accumulator, sort) => ({
-//           ...accumulator,
-//           [sort.orderBy]: sort.order,
-//         }),
-//         {},
-//       ),
-//     });
+    return entity ? MatchMapper.toDomain(entity) : null;
+  }
 
-//     return {
-//       data: entities.map((profile) => ProfileMapper.toDomain(profile)),
-//       totalItems,
-//     };
-//   }
+  async findByUserId(userId: string): Promise<Match[]> {
+    const entities = await this.matchRepo.find({
+      where: [{ user: { id: userId } }, { matchedUser: { id: userId } }],
+      relations: ['user', 'matchedUser'],
+    });
 
-//   async findById(id: Profile['id']): Promise<NullableType<Profile>> {
-//     const entity = await this.profilesRepository.findOne({
-//       where: { id: id },
-//     });
+    return entities.map(MatchMapper.toDomain);
+  }
 
-//     return entity ? ProfileMapper.toDomain(entity) : null;
-//   }
+  async remove(id: string): Promise<void> {
+    await this.matchRepo.delete(id);
+  }
+}
 
-//   async findByIds(ids: Profile['id'][]): Promise<Profile[]> {
-//     const entities = await this.profilesRepository.find({
-//       where: { id: In(ids) },
-//     });
-
-//     return entities.map((profile) => ProfileMapper.toDomain(profile));
-//   }
-
-//   async findByUserId(userId: Profile['id']): Promise<NullableType<Profile>> {
-//     const entity = await this.profilesRepository.findOne({
-//       where: { user: { id: userId } },
-//     });
-
-//     return entity ? ProfileMapper.toDomain(entity) : null;
-//   }
-
-//   async update(id: Profile['id'], payload: Partial<Profile>): Promise<Profile> {
-//     const entity = await this.profilesRepository.findOne({
-//       where: { id: id },
-//     });
-
-//     if (!entity) {
-//       throw new Error('Profile not found');
-//     }
-
-//     const updatedEntity = await this.profilesRepository.save(
-//       this.profilesRepository.create(
-//         ProfileMapper.toPersistence({
-//           ...ProfileMapper.toDomain(entity),
-//           ...payload,
-//         }),
-//       ),
-//     );
-
-//     return ProfileMapper.toDomain(updatedEntity);
-//   }
-
-//   async remove(id: Profile['id']): Promise<void> {
-//     await this.profilesRepository.softDelete(id);
-//   }
-// }

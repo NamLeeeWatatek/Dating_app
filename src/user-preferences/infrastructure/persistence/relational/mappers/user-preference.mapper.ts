@@ -41,7 +41,6 @@ export class UserPreferenceMapper {
     domainEntity.diet = raw.diet ?? [];
     domainEntity.socialMedia = raw.socialMedia ?? [];
     domainEntity.sleepHabits = raw.sleepHabits ?? [];
-
     return domainEntity;
   }
 

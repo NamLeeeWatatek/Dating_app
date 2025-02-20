@@ -10,7 +10,7 @@ import { RoleEnum } from '../roles/roles.enum';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin, RoleEnum.user)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('discovery')
+@ApiTags('Discovery')
 @Controller({
   path: 'discovery',
   version: '1',

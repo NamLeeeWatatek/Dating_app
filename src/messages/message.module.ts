@@ -10,6 +10,6 @@ const infrastructurePersistenceModule = RelationalMessagePersistenceModule;
   imports: [infrastructurePersistenceModule, UsersModule],
   controllers: [MessageController],
   providers: [MessageService, infrastructurePersistenceModule, MessageGateway],
-  exports: [MessageService],
+  exports: [MessageService, MessageGateway],
 })
 export class MessageModule {}
