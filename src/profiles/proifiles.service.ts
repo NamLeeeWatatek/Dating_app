@@ -93,7 +93,7 @@ export class ProfileService {
 
     return fileIds;
   }
-  async getProfilePhotos(fileIds: string[]): Promise<{ images: string[] }> {
+  async getProfilePhotos(fileIds: string[]): Promise<string[]> {
     if (!fileIds || fileIds.length === 0) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -111,7 +111,7 @@ export class ProfileService {
     );
     if (cachedImages) {
       console.log('Cache hit:', cacheKey);
-      return { images: cachedImages }; // Không cần JSON.parse() vì đã trả về string[]
+      return cachedImages; // Không cần JSON.parse() vì đã trả về string[]
     }
 
     // 2️⃣ Nếu chưa có trong cache, lấy từ Firebase
@@ -122,7 +122,7 @@ export class ProfileService {
     await this.redisService.set(cacheFolder, cacheKey, imagePaths, 3600);
 
     console.log('Cache miss:', cacheKey);
-    return { images: imagePaths };
+    return imagePaths;
   }
 
   async findManyWithPagination({
