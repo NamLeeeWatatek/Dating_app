@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { InteractionEntity } from './infrastructure/persistence/relational/entities/interaction.entity';
-import { InteractionRepository } from './infrastructure/persistence/interaction.repository';
-import { InteractionsRelationalRepository } from './infrastructure/persistence/relational/repositories/interaction.repository';
-import { RedisModule } from '../redis/redis.module';
+import { RelationalInteractionPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { UsersModule } from '../users/users.module';
+import { InteractionController } from './interactions.controller';
+import { InteractionsService } from './interactions.service';
+
+const infrastructurePersistenceModule = RelationalInteractionPersistenceModule;
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InteractionEntity]), RedisModule],
-  providers: [
-    {
-      provide: InteractionRepository,
-      useClass: InteractionsRelationalRepository,
-    },
-  ],
-  exports: [InteractionRepository],
+  imports: [infrastructurePersistenceModule, UsersModule],
+  controllers: [InteractionController],
+  providers: [InteractionsService, infrastructurePersistenceModule],
+  exports: [InteractionsService, infrastructurePersistenceModule],
 })
-export class RelationalInteractionPersistenceModule {}
+export class InteractionModule {}

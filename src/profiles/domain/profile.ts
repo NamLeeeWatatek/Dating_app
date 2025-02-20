@@ -2,6 +2,7 @@ import { User } from '../../users/domain/user';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Gender } from '../enums/gender.enum';
 import { IsLatitude, IsLongitude, IsOptional } from 'class-validator';
+import { UserPreference } from '../../user-preferences/domain/user-preference';
 
 export class Profile {
   @ApiProperty({ type: String })
@@ -9,6 +10,9 @@ export class Profile {
 
   @ApiProperty({ type: () => User })
   user: User;
+
+  @ApiProperty({ type: () => UserPreference })
+  userPreference?: UserPreference;
 
   @ApiProperty({ type: String, example: 'John Doe' })
   displayName: string;

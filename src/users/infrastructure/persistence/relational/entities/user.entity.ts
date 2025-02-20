@@ -9,6 +9,8 @@ import {
   UpdateDateColumn,
   OneToOne,
   OneToMany,
+  BeforeUpdate,
+  BeforeRemove,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -18,6 +20,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { ProfileEntity } from '../../../../../profiles/infrastructure/persistence/relational/entities/profile.entity';
 import { InteractionEntity } from '../../../../../interactions/infrastructure/persistence/relational/entities/interaction.entity';
 import { PotentialMatchEntity } from '../../../../../potential-match/infrastructure/persistence/relational/entities/potential-match.entity';
+import { MatchesEntity } from '../../../../../matches/persistence/relational/entities/match.entity';
 
 @Entity({
   name: 'user',
@@ -85,4 +88,15 @@ export class UserEntity extends EntityRelationalHelper {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @BeforeUpdate()
+  @BeforeRemove()
+  softDeleteProfile() {
+    if (this.deletedAt) {
+      this.profile!.deletedAt = new Date();
+    }
+  }
+
+  @OneToMany(() => MatchesEntity, (match) => match.user, { cascade: true })
+  matches: MatchesEntity[];
 }
