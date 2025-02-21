@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere } from 'typeorm';
+import { Repository, FindOptionsWhere, In } from 'typeorm';
 
 import { InteractionEntity } from '../entities/interaction.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -65,16 +65,46 @@ export class InteractionsRelationalRepository implements InteractionRepository {
     userId: string,
     paginationOptions: IPaginationOptions,
   ): Promise<PaginationResult<Interaction>> {
-    const [entities, totalItems] =
-      await this.interactionsRepository.findAndCount({
-        where: { receiverUserId: userId, type: InteractionType.LIKE },
-        skip: (paginationOptions.page - 1) * paginationOptions.limit,
-        take: paginationOptions.limit,
-      });
+    // Lấy danh sách những người đã LIKE hoặc SUPERLIKE userId
+    const [likes] = await this.interactionsRepository.findAndCount({
+      where: {
+        receiverUserId: userId,
+        type: In([InteractionType.LIKE, InteractionType.SUPERLIKE]),
+      },
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+    });
+
+    // Danh sách user đã like mình
+    const likedUserIds = likes.map((like) => like.senderUserId);
+
+    if (likedUserIds.length === 0) {
+      return {
+        data: [],
+        totalItems: 0,
+      };
+    }
+
+    // Kiểm tra xem userId đã phản hồi lại hay chưa
+    const existingResponses = await this.interactionsRepository.find({
+      where: {
+        senderUserId: userId, // Mình đã phản hồi lại ai chưa?
+        receiverUserId: In(likedUserIds), // Chỉ kiểm tra với danh sách người đã like mình
+      },
+    });
+
+    // Lọc ra những người chưa bị phản hồi
+    const respondedUserIds = new Set(
+      existingResponses.map((res) => res.receiverUserId),
+    );
+
+    const filteredLikes = likes.filter(
+      (like) => !respondedUserIds.has(like.senderUserId),
+    );
 
     return {
-      data: entities.map(InteractionMapper.toDomain),
-      totalItems,
+      data: filteredLikes.map(InteractionMapper.toDomain),
+      totalItems: filteredLikes.length,
     };
   }
 

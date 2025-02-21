@@ -64,8 +64,24 @@ export class ProfileService {
     });
   }
   async findByUserId(userId: string): Promise<NullableType<Profile>> {
-    return this.profileRepository.findByUserId(userId);
+    const profile = await this.profileRepository.findByUserId(userId);
+    if (!profile) return null;
+
+    // Nếu profile.files không có, gán luôn mảng rỗng
+    profile.files = profile.files?.length
+      ? (
+          await Promise.all(
+            profile.files.map(async (fileId) => {
+              const file = await this.filesService.findById(fileId);
+              return file?.path || null;
+            }),
+          )
+        ).filter((path): path is string => path !== null) // Lọc bỏ null
+      : [];
+
+    return profile;
   }
+
   async uploadProfilePhotos(
     userId: string,
     files: Express.Multer.File[],
