@@ -42,15 +42,13 @@ export class ConversationController {
       limit = 50;
     }
 
-    const { data: entityData, totalItems } =
+    const { data, totalItems } =
       await this.conversationService.findManyWithPaginationByUserId({
         userId: query.userId,
         paginationOptions: { page, limit },
       });
 
-    const dtos = entityData.map((entity) => new ConversationDto(entity));
-
-    return infinityPagination(dtos, totalItems, { page, limit });
+    return infinityPagination(data, totalItems, { page, limit });
   }
 
   @ApiOkResponse({ type: ConversationDto })
@@ -61,7 +59,10 @@ export class ConversationController {
     @Query() query: FindConversationQueryDto,
   ): Promise<ConversationDto | null> {
     const conversation = await this.conversationService.findBy2UserIds(query);
-    return conversation ? new ConversationDto(conversation) : null;
+
+    return conversation
+      ? this.conversationService.getConversationDto(conversation)
+      : null;
   }
 
   @ApiOperation({ summary: 'Delete a conversation' })

@@ -3,10 +3,11 @@ import { RelationalConversationPersistenceModule } from './infrastructure/persis
 import { UsersModule } from '../users/users.module';
 import { ConversationController } from './conversation.controller';
 import { ConversationService } from './conversation.service';
+import { UserProfileModule } from '../user-profile/user-profile.module';
 const infrastructurePersistenceModule = RelationalConversationPersistenceModule;
 
 @Module({
-  imports: [infrastructurePersistenceModule, UsersModule],
+  imports: [infrastructurePersistenceModule, UsersModule, UserProfileModule],
   controllers: [ConversationController],
   providers: [ConversationService, infrastructurePersistenceModule],
   exports: [ConversationService],
