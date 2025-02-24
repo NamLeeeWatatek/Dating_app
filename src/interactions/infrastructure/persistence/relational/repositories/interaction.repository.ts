@@ -110,33 +110,19 @@ export class InteractionsRelationalRepository implements InteractionRepository {
 
   async checkMatch(userId1: string, userId2: string): Promise<boolean> {
     const sentInteraction = await this.interactionsRepository.findOne({
-      where: [
-        {
-          senderUserId: userId1,
-          receiverUserId: userId2,
-          type: InteractionType.LIKE,
-        },
-        {
-          senderUserId: userId1,
-          receiverUserId: userId2,
-          type: InteractionType.SUPERLIKE,
-        },
-      ],
+      where: {
+        senderUserId: userId1,
+        receiverUserId: userId2,
+        type: In([InteractionType.LIKE, InteractionType.SUPERLIKE]),
+      },
     });
 
     const receivedInteraction = await this.interactionsRepository.findOne({
-      where: [
-        {
-          senderUserId: userId2,
-          receiverUserId: userId1,
-          type: InteractionType.LIKE,
-        },
-        {
-          senderUserId: userId2,
-          receiverUserId: userId1,
-          type: InteractionType.SUPERLIKE,
-        },
-      ],
+      where: {
+        senderUserId: userId2,
+        receiverUserId: userId1,
+        type: In([InteractionType.LIKE, InteractionType.SUPERLIKE]),
+      },
     });
 
     return !!(sentInteraction && receivedInteraction);

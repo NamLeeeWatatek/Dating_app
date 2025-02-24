@@ -57,4 +57,18 @@ export class MatchesRelationalRepository implements MatchRepository {
   async remove(id: string): Promise<void> {
     await this.matchRepo.delete(id);
   }
+  async findAndCountByUserId(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<[Match[], number]> {
+    const [entities, totalItems] = await this.matchRepo.findAndCount({
+      where: [{ user: { id: userId } }, { matchedUser: { id: userId } }],
+      relations: ['user', 'matchedUser'],
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return [entities.map(MatchMapper.toDomain), totalItems];
+  }
 }

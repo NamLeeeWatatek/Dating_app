@@ -8,6 +8,11 @@ import { MatchRepository } from './persistence/match.repository';
 import { MessageGateway } from '../messages/gateway/message.gateway';
 import { InteractionRepository } from '../interactions/infrastructure/persistence/interaction.repository';
 import { ErrorResponseDto } from '../utils/dto/error-response.dto';
+import { UserProfileDto } from '../user-profile/dto/user-profile.dto';
+import { UserProfileService } from '../user-profile/user-profile.service';
+import { QueryInteractionDto } from '../interactions/dto/query-interation.dto';
+import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
+import { infinityPagination } from '../utils/infinity-pagination';
 
 @Injectable()
 export class MatchService {
@@ -15,6 +20,7 @@ export class MatchService {
     private readonly matchRepository: MatchRepository,
     private readonly messageGateway: MessageGateway,
     private readonly interactionRepository: InteractionRepository,
+    private readonly userProfileService: UserProfileService,
   ) {}
 
   async createMatch(userId: string, matchedUserId: string): Promise<Match> {
@@ -53,8 +59,58 @@ export class MatchService {
     return savedMatch;
   }
 
-  async getUserMatches(userId: string): Promise<Match[]> {
-    return await this.matchRepository.findByUserId(userId);
+  // async getUserMatches(userId: string): Promise<UserProfileDto[]> {
+  //   const matches = await this.matchRepository.findByUserId(userId);
+  //   console.log(matches);
+  //   const matchedUserIds = matches.map((match) =>
+  //     match.userId === userId ? match.matchedUserId : match.userId,
+  //   );
+  //   console.log(matchedUserIds);
+  //   const userProfiles: UserProfileDto[] = [];
+  //   for (const matchedUserId of matchedUserIds) {
+  //     const userProfile =
+  //       await this.userProfileService.getUserWithProfile(matchedUserId);
+  //     if (userProfile) {
+  //       userProfiles.push(userProfile);
+  //     }
+  //   }
+  //   console.log(userProfiles);
+  //   return userProfiles;
+  // }
+  async getUserMatches(
+    userId: string,
+    query: QueryInteractionDto,
+  ): Promise<InfinityPaginationResponseDto<UserProfileDto>> {
+    const page = query?.page ?? 1;
+    let limit = query?.limit ?? 10;
+    if (limit > 50) {
+      limit = 50;
+    }
+
+    // Gọi hàm mới trong repository
+    const [matches, totalItems] =
+      await this.matchRepository.findAndCountByUserId(userId, page, limit);
+
+    console.log('Matches:', matches);
+
+    const matchedUserIds = matches.map((match) =>
+      match.userId === userId ? match.matchedUserId : match.userId,
+    );
+
+    console.log('Matched User IDs:', matchedUserIds);
+
+    const userProfiles = await Promise.all(
+      matchedUserIds.map(async (matchedUserId) => {
+        console.log(`Fetching profile for user: ${matchedUserId}`);
+        return await this.userProfileService.getUserWithProfile(matchedUserId);
+      }),
+    );
+
+    return infinityPagination(
+      userProfiles.filter((profile) => profile !== null) as UserProfileDto[],
+      totalItems,
+      { page, limit },
+    );
   }
 
   async deleteMatch(userId: string, matchedUserId: string): Promise<void> {
