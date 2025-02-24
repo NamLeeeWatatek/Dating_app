@@ -14,4 +14,6 @@ export abstract class MatchRepository {
   abstract findByUserId(userId: string): Promise<Match[]>;
 
   abstract remove(id: Match['id']): Promise<void>;
+
+  abstract findAndCountByUserId(userId: string, page: number, limit: number);
 }

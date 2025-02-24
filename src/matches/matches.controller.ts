@@ -7,6 +7,7 @@ import {
   UseGuards,
   HttpStatus,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +23,9 @@ import { RolesGuard } from '../roles/roles.guard';
 import { RoleEnum } from '../roles/roles.enum';
 import { MatchService } from './matches.service';
 import { Match } from './domain/match';
+import { UserProfileDto } from '../user-profile/dto/user-profile.dto';
+import { InfinityPaginationResponse } from '../utils/dto/infinity-pagination-response.dto';
+import { QueryInteractionDto } from '../interactions/dto/query-interation.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.user, RoleEnum.admin)
@@ -50,18 +54,19 @@ export class MatchController {
   ): Promise<Match> {
     return this.matchService.createMatch(userId, matchedUserId);
   }
-
   @ApiOkResponse({
-    type: [Match],
-    description: 'Returns all matches of a user.',
+    type: InfinityPaginationResponse(UserProfileDto), // Cập nhật kiểu trả về có phân trang
   })
   @ApiOperation({
-    summary: 'Get all matches of a user',
+    summary: 'Get all matched users with their profile (paginated)',
   })
   @Get(':userId')
   @HttpCode(HttpStatus.OK)
-  getUserMatches(@Param('userId') userId: string): Promise<Match[]> {
-    return this.matchService.getUserMatches(userId);
+  async getUserMatches(
+    @Param('userId') userId: string,
+    @Query() query: QueryInteractionDto, // Nhận page và limit từ query params
+  ) {
+    return this.matchService.getUserMatches(userId, query);
   }
 
   @ApiNoContentResponse({
