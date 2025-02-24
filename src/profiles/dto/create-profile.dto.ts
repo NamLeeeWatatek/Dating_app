@@ -51,8 +51,7 @@ export class CreateProfileDto {
     isArray: true,
   })
   @IsNotEmpty()
-  @IsEnum(SexualOrientation, { each: true }) // Kiểm tra từng phần tử trong mảng
-  sexualOrientation: SexualOrientation[];
+  sexualOrientation: string[];
 
   @ApiPropertyOptional({ example: 'Loves hiking and coffee', type: String })
   @IsOptional()
