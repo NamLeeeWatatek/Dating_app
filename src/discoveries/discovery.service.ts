@@ -97,6 +97,31 @@ export class DiscoveryService {
               ) ||
               userPref.languages.some((languages) =>
                 otherUserPref.languages.includes(languages),
+              ) ||
+              userPref.communicationStyles.some((communicationStyles) =>
+                otherUserPref.communicationStyles.includes(communicationStyles),
+              ) ||
+              userPref.diet.some((diet) => otherUserPref.diet.includes(diet)) ||
+              userPref.drinking.some((drinking) =>
+                otherUserPref.drinking.includes(drinking),
+              ) ||
+              userPref.education.some((education) =>
+                otherUserPref.education.includes(education),
+              ) ||
+              userPref.futureFamily.some((futureFamily) =>
+                otherUserPref.futureFamily.includes(futureFamily),
+              ) ||
+              userPref.lookingFor.some((lookingFor) =>
+                otherUserPref.lookingFor.includes(lookingFor),
+              ) ||
+              userPref.personalityTypes.some((personalityTypes) =>
+                otherUserPref.personalityTypes.includes(personalityTypes),
+              ) ||
+              userPref.petPreferences.some((petPreferences) =>
+                otherUserPref.petPreferences.includes(petPreferences),
+              ) ||
+              userPref.exercise.some((exercise) =>
+                otherUserPref.exercise.includes(exercise),
               ),
           ),
         );
@@ -126,12 +151,50 @@ export class DiscoveryService {
       });
     }
 
-    const filteredMatchedUsers = matchedUsers.filter(
-      (entity) =>
-        !dislikedUsers.includes(entity.user.id) &&
-        !likedUsers.includes(entity.user.id) &&
-        !superlikedUsers.includes(entity.user.id),
+    // Lấy danh sách số lượng interaction từ những người khác
+    const interactionCounts = await Promise.all(
+      matchedUsers.map(async (entity) => {
+        const hasBeenInteractedByOthers =
+          await this.interactionRepository.count({
+            where: { senderUserId: entity.user.id, receiverUserId: userId },
+          });
+
+        const mutualLike = await this.interactionRepository.findOne({
+          where: [
+            {
+              senderUserId: userId,
+              receiverUserId: entity.user.id,
+              type: In([InteractionType.LIKE, InteractionType.SUPERLIKE]),
+            },
+            {
+              senderUserId: entity.user.id,
+              receiverUserId: userId,
+              type: In([InteractionType.LIKE, InteractionType.SUPERLIKE]),
+            },
+          ],
+        });
+
+        return {
+          entity,
+          hasBeenInteractedByOthers,
+          isMutualLike: !!mutualLike, // Nếu cả hai đã thích nhau
+        };
+      }),
     );
+
+    // Lọc lại danh sách matchedUsers
+    const filteredMatchedUsers = interactionCounts
+      .filter(({ entity, hasBeenInteractedByOthers, isMutualLike }) => {
+        const hasInteracted =
+          dislikedUsers.includes(entity.user.id) ||
+          likedUsers.includes(entity.user.id) ||
+          superlikedUsers.includes(entity.user.id);
+
+        return (
+          (!hasInteracted || hasBeenInteractedByOthers > 0) && !isMutualLike
+        );
+      })
+      .map(({ entity }) => entity);
 
     const preferredUsers = [...likedUsers, ...superlikedUsers];
 
